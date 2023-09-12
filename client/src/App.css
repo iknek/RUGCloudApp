@@ -25,3 +25,33 @@
   padding: 10px 0;
   border-bottom: 1px solid #ccc;
 }
+
+.left-panel ul {
+  list-style-type: none; 
+  padding: 0;
+}
+
+.left-panel li {
+  text-align: center; 
+  font-size: 1.2em; 
+  margin: 15px 10px; 
+  padding: 10px; 
+  border: 1px solid #ddd;
+  border-radius: 5px; 
+  cursor: pointer;
+  transition: background-color 0.3s ease; 
+}
+
+.left-panel li:hover {
+  background-color: #f5f5f5; /* Hover effect */
+}
+
+.left-panel li.selected {
+  background-color: #d5d5d5; /* Grey background for selected item */
+}
+
+.item-description {
+  font-size: 0.8em; 
+  color: #555; 
+  margin-top: 5px; 
+}

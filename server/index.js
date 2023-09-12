@@ -4,7 +4,7 @@ const { getItem, getAllItems, createItem } = require("./db/items.js");
 const { getBook, getAllBooks, createBook } = require("./db/books.js");
 const bodyParser = require("body-parser"); // Require the body-parser middleware
 
-const PORT = process.env.PORT || 3001;
+const PORT = 3001;
 
 const app = express();
 

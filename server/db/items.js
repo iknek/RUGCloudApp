@@ -2,7 +2,6 @@
 const { connectDB } = require("./connect");
 const Item = require('../models/item'); // Import the item model
 
-
 const getItem = async (itemID) => {
     await connectDB();
     return Item.findOne({ _id: itemID});
