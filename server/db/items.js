@@ -21,8 +21,30 @@ const createItem = async (itemData) => {
     return createdItem;
 };
 
+const updateItem = async (itemID, itemData) => {
+    await connectDB();
+    
+    try{
+        const updateItemInfo = Item.updateOne({ _id: itemID}, itemData, {
+            returnOriginal: false,
+        });
+    
+        if((await updateItemInfo).acknowledged){
+            const itemOut = await getItem(itemID);
+            if(itemOut != null){
+                return itemOut;
+            }else{
+                throw new Error; //throw an error in case there is no item under this ID
+            }
+        }
+    } catch (error) {
+        throw new Error; //throw an error in case the itemID was an unvalid mongoID
+    }  
+};
+
 module.exports = {
     getItem,
     getAllItems,
     createItem,
+    updateItem,
 }
