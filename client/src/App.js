@@ -1,40 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import './App.css';
 import ItemList from './ItemList';
+import Handlers from './Handlers';
 
 function App() {
-    const [items, setItems] = useState([]);
-    const [selectedItem, setSelectedItem] = useState(null); // Placeholder for selected item for the right panel
-
-    useEffect(() => {
-        fetch("/items")
-            .then((res) => res.json())
-            .then((data) => setItems(data))
-            .catch((error) => console.error("Error fetching items:", error));
-    }, []);
-
-    const handleItemClick = (item) => {
-        setSelectedItem(item);
-    }
-
-    const handleAddNewItem = () => {
-        // Placeholder function for now, to be replaced with API call later
-        const newItem = {
-            _id: new Date().getTime().toString(), // Temporary ID for demonstration
-            name: "New List",
-            description: "Description for new list"
-        };
-
-        setItems(prevItems => [...prevItems, newItem]);
-    }
+    const { items, selectedItem, handleItemClick, handleAddNewItem } = Handlers();
 
     return (
         <div className="container">
             <div className="left-panel">
                 <ItemList 
                     items={items} 
-                    onItemSelected={(item) => handleItemClick(item)}
-                    onAddNewItem={() => handleAddNewItem()}
+                    onItemSelected={handleItemClick}
+                    onAddNewItem={() => handleAddNewItem({
+                        name: "Custom Name",
+                        description: "Custom Description"
+                    })}
                 />
             </div>
             <div className="right-panel">
