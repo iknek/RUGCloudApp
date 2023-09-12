@@ -4,18 +4,18 @@
 
 .container {
   display: flex;
-  height: 100vh; 
+  height: 100vh;
 }
 
 .left-panel {
-  flex: 1; 
-  background-color: #f0f0f0; 
-  overflow-y: auto; /* If content overflows, make it scrollable */
+  flex: 1;
+  background-color: #f0f0f0;
+  overflow-y: auto;
 }
 
 .right-panel {
-  flex: 2; 
-  background-color: #e0e0e0; 
+  flex: 2;
+  background-color: #e0e0e0;
 }
 
 .list-header {
@@ -29,29 +29,47 @@
 .left-panel ul {
   list-style-type: none; 
   padding: 0;
+  margin: 0;  /* Ensuring there is no default margin */
 }
 
-.left-panel li {
+.left-panel li{
   text-align: center; 
-  font-size: 1.2em; 
-  margin: 15px 10px; 
-  padding: 10px; 
+  font-size: 1.2em;
+  margin: 15px 10px;
+  padding: 10px;
   border: 1px solid #ddd;
-  border-radius: 5px; 
+  border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease; 
+  transition: background-color 0.3s ease;
+  background-color: #f0f0f0; 
 }
 
-.left-panel li:hover {
-  background-color: #f5f5f5; /* Hover effect */
+.left-panel li:hover{
+  background-color: #f5f5f5;
 }
 
 .left-panel li.selected {
-  background-color: #d5d5d5; /* Grey background for selected item */
+  background-color: #d5d5d5;
 }
 
 .item-description {
-  font-size: 0.8em; 
-  color: #555; 
-  margin-top: 5px; 
+  font-size: 0.8em;
+  color: #555;
+  margin-top: 5px;
+}
+
+.add-list-btn {
+  text-align: center; 
+  font-size: 1.2em;
+  margin: 15px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.add-list-btn:hover {
+  background-color: #4CAF50;
+  color: white;
 }

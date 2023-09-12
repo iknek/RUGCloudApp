@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
-import "./App.css";
+import React, { useState, useEffect } from 'react';
+import './App.css';
+import ItemList from './ItemList';
 
 function App() {
     const [items, setItems] = useState([]);
-    const [selectedItem, setSelectedItem] = useState(null);
+    const [selectedItem, setSelectedItem] = useState(null); // Placeholder for selected item for the right panel
 
     useEffect(() => {
         fetch("/items")
@@ -13,36 +14,38 @@ function App() {
     }, []);
 
     const handleItemClick = (item) => {
-        // For now, just set the selected item, later this can be expanded to fetch more details or navigate.
         setSelectedItem(item);
-    };
+    }
+
+    const handleAddNewItem = () => {
+        // Placeholder function for now, to be replaced with API call later
+        const newItem = {
+            _id: new Date().getTime().toString(), // Temporary ID for demonstration
+            name: "New List",
+            description: "Description for new list"
+        };
+
+        setItems(prevItems => [...prevItems, newItem]);
+    }
 
     return (
         <div className="container">
             <div className="left-panel">
-                <div className="list-header">My Lists</div>
-                <ul>
-                    {items.map(item => (
-                        <li 
-                            key={item._id} 
-                            onClick={() => handleItemClick(item)}
-                            className={selectedItem && selectedItem._id === item._id ? 'selected' : ''}
-                        >
-                            {item.name}
-                            <div className="item-description">{item.description}</div>
-                        </li>
-                    ))}
-                </ul>
+                <ItemList 
+                    items={items} 
+                    onItemSelected={(item) => handleItemClick(item)}
+                    onAddNewItem={() => handleAddNewItem()}
+                />
             </div>
             <div className="right-panel">
+                {/* Placeholder for the right panel content based on the selected item */}
                 {selectedItem ? (
                     <div>
-                        {/* Placeholder for now, can expand later. */}
-                        <h3>{selectedItem.name}</h3>
+                        <h2>{selectedItem.name}</h2>
                         <p>{selectedItem.description}</p>
                     </div>
                 ) : (
-                    <p>Select an item to view details...</p>
+                    <p>Select an item to view its contents.</p>
                 )}
             </div>
         </div>
