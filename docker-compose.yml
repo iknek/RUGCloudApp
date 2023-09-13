@@ -1,11 +1,13 @@
 version: '3'
 services:
   server:
-    image: server-image
+    build:
+      context: ./server
     ports:
       - "3001:3001"
   client:
-    image: client-image
+    build:
+      context: ./client
     ports:
       - "3000:3000"
     depends_on:
