@@ -4,26 +4,32 @@ import ItemList from './ItemList';
 import Handlers from './Handlers';
 
 function App() {
-    const { items, selectedItem, handleItemClick, handleAddNewItem } = Handlers();
+    const { items, selectedItem, handleItemClick, handleAddNewItem, handleItemEdit } = Handlers();
 
     return (
         <div className="container">
             <div className="left-panel">
                 <ItemList 
-                    items={items} 
+                    items={items}
                     onItemSelected={handleItemClick}
                     onAddNewItem={() => handleAddNewItem({
                         name: "Custom Name",
                         description: "Custom Description"
                     })}
+                    onItemEdit={handleItemEdit}
                 />
             </div>
             <div className="right-panel">
-                {/* Placeholder for the right panel content based on the selected item */}
                 {selectedItem ? (
                     <div>
-                        <h2>{selectedItem.name}</h2>
-                        <p>{selectedItem.description}</p>
+                        <input
+                            value={selectedItem.name}
+                            onChange={e => handleItemEdit(selectedItem._id, 'name', e.target.value)}
+                        />
+                        <textarea
+                            value={selectedItem.description}
+                            onChange={e => handleItemEdit(selectedItem._id, 'description', e.target.value)}
+                        />
                     </div>
                 ) : (
                     <p>Select an item to view its contents.</p>

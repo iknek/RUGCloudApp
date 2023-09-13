@@ -1,14 +1,11 @@
-// Handlers.js
-
 import { useState, useEffect } from 'react';
-
 
 const Handlers = () => {
     const [items, setItems] = useState([]);
     const [selectedItem, setSelectedItem] = useState(null);
 
     useEffect(() => {
-        fetch("/items")
+        fetch("http://backend:3001/items")
             .then((res) => res.json())
             .then((data) => setItems(data))
             .catch((error) => console.error("Error fetching items:", error));
@@ -20,7 +17,7 @@ const Handlers = () => {
 
     const handleAddNewItem = async (newItemData) => {
         try {
-            const response = await fetch("/item", {
+            const response = await fetch("http://backend:3001/item", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -40,11 +37,33 @@ const Handlers = () => {
         }
     }
 
+    const handleItemEdit = (itemId, field, value) => {
+        setItems(prevItems => {
+            return prevItems.map(item => {
+                if (item._id === itemId) {
+                    return {
+                        ...item,
+                        [field]: value
+                    };
+                }
+                return item;
+            });
+        });
+
+        if (selectedItem && selectedItem._id === itemId) {
+            setSelectedItem(prevItem => ({
+                ...prevItem,
+                [field]: value
+            }));
+        }
+    }
+
     return {
         items,
         selectedItem,
         handleItemClick,
-        handleAddNewItem
+        handleAddNewItem,
+        handleItemEdit
     };
 }
 
