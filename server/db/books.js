@@ -22,8 +22,30 @@ const createBook = async (bookData) => {
     return createdBook;
 };
 
+const updateBook = async (bookID, bookData) => {
+    await connectDB();
+    
+    try{
+        const updateBookInfo = Book.updateOne({ _id: bookID}, bookData, {
+            returnOriginal: false,
+        });
+    
+        if((await updateBookInfo).acknowledged){
+            const bookOut = await getBook(bookID);
+            if(bookOut != null){
+                return bookOut;
+            }else{
+                throw new Error; //throw an error in case there is no book under this ID
+            }
+        }
+    } catch (error) {
+        throw new Error; //throw an error in case the bookID was an unvalid mongoID
+    }  
+};
+
 module.exports = {
     getBook,
     getAllBooks,
     createBook,
+    updateBook,
 }
