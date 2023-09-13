@@ -1,14 +1,15 @@
 version: '3'
-
 services:
-  backend:
-    build:
-      context: ./server
+  server:
+    image: server-image
     ports:
       - "3001:3001"
-
-  frontend:
-    build:
-      context: ./client
+  client:
+    image: client-image
     ports:
       - "3000:3000"
+    depends_on:
+      - server
+networks:
+  default:
+    name: my-network

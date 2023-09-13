@@ -4,7 +4,7 @@ module.exports = function(app) {
   app.use(
     ['/api', '/items', '/item', '/books', '/book'],
     createProxyMiddleware({
-      target: 'http:/backend:3001',
+      target: 'http://server:3001',
       changeOrigin: true,
     })
   );

@@ -5,7 +5,7 @@ const Handlers = () => {
     const [selectedItem, setSelectedItem] = useState(null);
 
     useEffect(() => {
-        fetch("http://backend:3001/items")
+        fetch("/items")
             .then((res) => res.json())
             .then((data) => setItems(data))
             .catch((error) => console.error("Error fetching items:", error));
@@ -17,7 +17,7 @@ const Handlers = () => {
 
     const handleAddNewItem = async (newItemData) => {
         try {
-            const response = await fetch("http://backend:3001/item", {
+            const response = await fetch("/item", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
