@@ -14,6 +14,13 @@ services:
       - "${CLIENT_PORT}:3000"
     depends_on:
       - server  # The client depends on the server
+  worker:  
+    build:
+      context: ./worker 
+    ports:
+      - "${WORKER_PORT}:3002"  
+    env_file:
+      - .env
 networks:
   default:
     name: my-network
