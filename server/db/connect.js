@@ -1,6 +1,6 @@
 // Imports
 const { mongoose } = require("mongoose");
-require("dotenv").config();
+require("dotenv").config({ path: '../.env' });
 
 // Environment variables
 const dbUser = process.env.DATABASE_USER;
