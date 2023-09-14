@@ -1,18 +1,41 @@
-docker-build:
+stages:
+  - build
+
+.docker_template: &docker_definition
   image: docker:latest
-  stage: build
   services:
     - docker:dind
   variables:
-    DOCKER_IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+    DOCKER_DRIVER: overlay2
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
-  
+
+build-server:
+  <<: *docker_definition
+  stage: build
+  variables:
+    DOCKER_IMAGE_NAME: $CI_REGISTRY_IMAGE/server:$CI_COMMIT_REF_SLUG
   script:
+    - cd server
     - docker build --pull -t "$DOCKER_IMAGE_NAME" .
     - docker push "$DOCKER_IMAGE_NAME"
     - |
       if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
-        docker tag "$DOCKER_IMAGE_NAME" "$CI_REGISTRY_IMAGE:latest"
-        docker push "$CI_REGISTRY_IMAGE:latest"
+        docker tag "$DOCKER_IMAGE_NAME" "$CI_REGISTRY_IMAGE/server:latest"
+        docker push "$CI_REGISTRY_IMAGE/server:latest"
+      fi
+
+build-client:
+  <<: *docker_definition
+  stage: build
+  variables:
+    DOCKER_IMAGE_NAME: $CI_REGISTRY_IMAGE/client:$CI_COMMIT_REF_SLUG
+  script:
+    - cd client
+    - docker build --pull -t "$DOCKER_IMAGE_NAME" .
+    - docker push "$DOCKER_IMAGE_NAME"
+    - |
+      if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
+        docker tag "$DOCKER_IMAGE_NAME" "$CI_REGISTRY_IMAGE/client:latest"
+        docker push "$CI_REGISTRY_IMAGE/client:latest"
       fi
