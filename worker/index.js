@@ -5,9 +5,11 @@ require('dotenv').config({ path: '../.env' });
 
 const app = express();
 const port = process.env.WORKER_PORT;
+const serverPort = process.env.SERVER_PORT;
+const clientPort = process.env.CLIENT_PORT;
 
-const serverUrl = 'http://server:3001';
-const clientUrl = 'http://client:3000';
+const serverUrl = `http://server:3001`;
+const clientUrl = `http://client:3000`;
 
 const ping = async (url) => {
   try {
@@ -35,6 +37,7 @@ app.get('/', async (req, res) => {
 
   const serverPingResult = await ping(serverUrl);
   const clientPingResult = await ping(clientUrl);
+  console.log("ping done");
 
   res.send(`
     <h1>Worker Health Check</h1>
@@ -48,4 +51,5 @@ app.get('/', async (req, res) => {
 
 app.listen(port, () => {
   console.log(`Worker app listening at http://localhost:${port}`);
+  console.log(serverUrl, clientUrl);
 });
