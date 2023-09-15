@@ -1,6 +1,7 @@
 stages:
   - prepare
   - build
+  - push
 
 .docker_template: &docker_definition
   image: docker:latest
@@ -25,12 +26,6 @@ build-server:
   script:
     - cd server
     - docker build --pull -t "$DOCKER_IMAGE_NAME" .
-    - docker push "$DOCKER_IMAGE_NAME"
-    - |
-      if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
-        docker tag "$DOCKER_IMAGE_NAME" "$CI_REGISTRY_IMAGE/server:latest"
-        docker push "$CI_REGISTRY_IMAGE/server:latest"
-      fi
 
 build-client:
   <<: *docker_definition
@@ -40,12 +35,6 @@ build-client:
   script:
     - cd client
     - docker build --pull -t "$DOCKER_IMAGE_NAME" .
-    - docker push "$DOCKER_IMAGE_NAME"
-    - |
-      if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
-        docker tag "$DOCKER_IMAGE_NAME" "$CI_REGISTRY_IMAGE/client:latest"
-        docker push "$CI_REGISTRY_IMAGE/client:latest"
-      fi
 
 build-worker:
   <<: *docker_definition
@@ -55,9 +44,21 @@ build-worker:
   script:
     - cd worker
     - docker build --pull -t "$DOCKER_IMAGE_NAME" .
-    - docker push "$DOCKER_IMAGE_NAME"
+
+push-to-gitlab-registry:
+  <<: *docker_definition
+  stage: push
+  script:
+    - docker push "$CI_REGISTRY_IMAGE/server:$CI_COMMIT_REF_SLUG"
+    - docker push "$CI_REGISTRY_IMAGE/client:$CI_COMMIT_REF_SLUG"
+    - docker push "$CI_REGISTRY_IMAGE/worker:$CI_COMMIT_REF_SLUG"
     - |
       if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
-        docker tag "$DOCKER_IMAGE_NAME" "$CI_REGISTRY_IMAGE/worker:latest"
+        docker tag "$CI_REGISTRY_IMAGE/server:$CI_COMMIT_REF_SLUG" "$CI_REGISTRY_IMAGE/server:latest"
+        docker tag "$CI_REGISTRY_IMAGE/client:$CI_COMMIT_REF_SLUG" "$CI_REGISTRY_IMAGE/client:latest"
+        docker tag "$CI_REGISTRY_IMAGE/worker:$CI_COMMIT_REF_SLUG" "$CI_REGISTRY_IMAGE/worker:latest"
+        
+        docker push "$CI_REGISTRY_IMAGE/server:latest"
+        docker push "$CI_REGISTRY_IMAGE/client:latest"
         docker push "$CI_REGISTRY_IMAGE/worker:latest"
       fi
