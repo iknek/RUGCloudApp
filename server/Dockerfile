@@ -1,20 +1,29 @@
-# Use an official Node.js runtime as the base image
-FROM node:18.17.1
+# ----- Build Stage -----
+FROM node:18.17.1 AS build
 
-# Set the working directory in the container
-WORKDIR /server
+# Sets working directory in build stage container
+WORKDIR /server-build
 
-# Copy package.json and package-lock.json to the working directory
+# Copys package files and install dependencies
 COPY package*.json ./
-
-# Install application dependencies
 RUN npm install
 
-# Copy the rest of the application source code to the container
+# Copys rest of code to build container
 COPY . .
 
-# Expose the port the app runs on
+# ----- Production Stage -----
+FROM node:18.17.1
+
+# Set the working directory in the production stage container
+WORKDIR /server
+
+# Copy necessary files from the build stage
+COPY --from=build /server-build/node_modules ./node_modules/
+COPY --from=build /server-build/package*.json ./
+COPY --from=build /server-build/ ./
+
+# Expose the port app runs on
 EXPOSE 3001
 
-# Define the command to run your application
+# Runs application
 CMD ["npm", "start"]
