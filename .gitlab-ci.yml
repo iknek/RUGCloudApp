@@ -1,7 +1,6 @@
 stages:
   - prepare
   - build
-  - push
 
 .docker_template: &docker_definition
   image: docker:latest
