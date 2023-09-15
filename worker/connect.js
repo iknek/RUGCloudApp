@@ -4,17 +4,12 @@ require("dotenv").config({ path: '../.env' });
 
 const dbUser = process.env.DATABASE_USER;
 const dbPassword = process.env.DATABASE_PASSWORD;
-const dbCluster = process.env.DATABASE_CLUSTER;
-const dbname = process.env.DATABASE_NAME;
 
-const uri = `mongodb+srv://${dbUser}:${dbPassword}@${dbCluster}.xvtu0la.mongodb.net/${dbname}?retryWrites=true&w=majority`;
+const uri = `mongodb://${dbUser}:${dbPassword}@mongo:27017/mongodb-local`;
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(uri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(uri);
     return true; // Connection successful
   } catch (error) {
     console.error("MongoDB connection error:", error);
