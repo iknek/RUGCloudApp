@@ -19,6 +19,10 @@ app.use(cors({
 // Add body-parser middleware to parse JSON requests
 app.use(bodyParser.json());
 //app.use(cors());
+app.get("/", async (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.json({message: "Server live and running! :)"});
+});
 app.get("/api", async (req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.json({message: "Hello from server!"});
