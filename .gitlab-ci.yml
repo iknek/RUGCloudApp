@@ -39,3 +39,18 @@ build-client:
         docker tag "$DOCKER_IMAGE_NAME" "$CI_REGISTRY_IMAGE/client:latest"
         docker push "$CI_REGISTRY_IMAGE/client:latest"
       fi
+
+build-worker:
+  <<: *docker_definition
+  stage: build
+  variables:
+    DOCKER_IMAGE_NAME: $CI_REGISTRY_IMAGE/worker:$CI_COMMIT_REF_SLUG
+  script:
+    - cd worker
+    - docker build --pull -t "$DOCKER_IMAGE_NAME" .
+    - docker push "$DOCKER_IMAGE_NAME"
+    - |
+      if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
+        docker tag "$DOCKER_IMAGE_NAME" "$CI_REGISTRY_IMAGE/worker:latest"
+        docker push "$CI_REGISTRY_IMAGE/worker:latest"
+      fi
