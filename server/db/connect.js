@@ -8,8 +8,8 @@ const dbPassword = process.env.DATABASE_PASSWORD;
 const dbCluster = process.env.DATABASE_CLUSTER;
 const dbname = process.env.DATABASE_NAME;
 
-// MongoDB Atlas connection string
-const uri = "mongodb://localhost:27017/mongodb-local";
+// MongoDB connection string
+const uri = `mongodb://admin:secret@mongo:27017/mongodb-local?authSource=admin`;
 
 // Connect to MongoDB Cloud DataBase (Atlas) and return the database object
 const connectDB = async () => {
@@ -18,7 +18,6 @@ const connectDB = async () => {
           useNewUrlParser: true,
           useUnifiedTopology: true,
       });
-      console.log("MongoDB connected successfully");
   } catch (error) {
       console.error("MongoDB connection error:", error);
       process.exit(1);

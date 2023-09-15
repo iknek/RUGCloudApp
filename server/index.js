@@ -7,14 +7,6 @@ const bodyParser = require("body-parser"); // Require the body-parser middleware
 const PORT = 3001;
 
 const app = express();
-/*
-const cors = require('cors');
-app.use(cors({
-  origin: ["http://frontend:3000", "http://localhost:3000"], // Allow these domains
-  methods: ["GET", "POST"], // Allow these HTTP methods
-  credentials: true // Enable cookies and headers
-}));
-*/
 
 // Add body-parser middleware to parse JSON requests
 app.use(bodyParser.json());
