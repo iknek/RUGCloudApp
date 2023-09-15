@@ -1,7 +1,8 @@
 # cloud-app
 
-Server is in server directory. start it with npm start. 
-Frontend react is in app. cd in and start with npm start.
+To use this program with docker, download the directory, and simply run `docker compose up -d`. 
+
+Otherwise, cd into the server, client, and worker directories, starting each of them with npm start. 
 
 Frontend can fetch json message from server api.
 
