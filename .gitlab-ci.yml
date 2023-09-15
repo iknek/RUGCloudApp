@@ -58,7 +58,7 @@ push-to-gitlab-registry:
         docker tag "$CI_REGISTRY_IMAGE/client:$CI_COMMIT_REF_SLUG" "$CI_REGISTRY_IMAGE/client:latest"
         docker tag "$CI_REGISTRY_IMAGE/worker:$CI_COMMIT_REF_SLUG" "$CI_REGISTRY_IMAGE/worker:latest"
         
-        docker push "$CI_REGISTRY_IMAGE/server:latest"
-        docker push "$CI_REGISTRY_IMAGE/client:latest"
-        docker push "$CI_REGISTRY_IMAGE/worker:latest"
+        docker push "$CI_REGISTRY_IMAGE/server:$CI_COMMIT_REF_SLUG"
+        docker push "$CI_REGISTRY_IMAGE/client:$CI_COMMIT_REF_SLUG"
+        docker push "$CI_REGISTRY_IMAGE/worker:$CI_COMMIT_REF_SLUG"
       fi
