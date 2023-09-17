@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Use the CI/CD variables, if they are not set, default to what's currently in the .env.template
+# Use the CI/CD variables
 DATABASE_USER=${CI_MONGO_INITDB_ROOT_USERNAME}
 DATABASE_PASSWORD=${CI_MONGO_INITDB_ROOT_PASSWORD}
 CLIENT_PORT=${CI_CLIENT_PORT}
@@ -20,5 +20,5 @@ WORKER_PORT=$WORKER_PORT
 
 EOL
 
-# Print out the .env file (optional, for debugging purposes)
+# Print out the .env file
 cat .env
