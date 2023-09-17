@@ -3,15 +3,13 @@ const mongoose = require("mongoose");
 require("dotenv").config({ path: '../.env' });
 
 // Environment variables
-const dbUser = process.env.DATABASE_USER;
-const dbPassword = process.env.DATABASE_PASSWORD;
-const dbCluster = process.env.DATABASE_CLUSTER;
-const dbname = process.env.DATABASE_NAME;
+const dbUser = process.env.MONGO_INITDB_ROOT_USERNAME;
+const dbPassword = process.env.MONGO_INITDB_ROOT_PASSWORD;
+const dbPort = process.env.MONGO_PORT;
 
 // MongoDB connection string
-const uri = `mongodb://admin:secret@mongo:27017/mongodb-local?authSource=admin`;
+const uri = `mongodb://${dbUser}:${dbPassword}@mongo:${dbPort}/mongodb-local?authSource=${dbUser}`;
 
-// Connect to MongoDB Cloud DataBase (Atlas) and return the database object
 const connectDB = async () => {
   try {
       await mongoose.connect(uri, {
