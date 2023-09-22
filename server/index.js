@@ -1,84 +1,134 @@
+require('dotenv').config({ path: '../.env' });
+const Item = require('./models/item'); 
 const express = require("express");
 const { connectDB } = require("./db/connect.js");
 const { getItem, getAllItems, createItem, updateItem } = require("./db/items.js");
 const { getBook, getAllBooks, createBook, updateBook } = require("./db/books.js");
-const bodyParser = require("body-parser"); // Require the body-parser middleware
+
+const RABBITMQ_URL = `amqp://${process.env.RABBITMQ_DEFAULT_USER}:${process.env.RABBITMQ_DEFAULT_PASS}@rabbitmq:5672`;
+const express = require("express");
+const socketIo = require("socket.io");
+const amqp = require('amqplib/callback_api');
+const bodyParser = require("body-parser");
+const http = require('http');
 
 const PORT = 3001;
-
+const TASK_QUEUE = 'item_tasks_queue';
+const RESPONSE_QUEUE = 'item_responses_queue';
 const app = express();
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+      origin: "http://localhost:3000", // This is the origin of client app.
+      methods: ["GET", "POST"],
+      credentials: true
+  }
+});
 
-// Add body-parser middleware to parse JSON requests
 app.use(bodyParser.json());
-//app.use(cors());
-app.get("/", async (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.json({message: "Server live and running! :)"});
-});
-app.get("/api", async (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.json({message: "Hello from server!"});
-});
-app.get("/items", async (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  const items = await getAllItems();
-  res.json(items);
-});
-app.get("/item/:itemID", async (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  const { itemID } = req.params;  
-  const item = await getItem(itemID);
-  res.json(item);
-});
-app.post("/item", async (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  const item = await createItem(req.body);
-  res.json(item);
-});
-app.put("/item/:itemID", async (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  const { itemID } = req.params;  
-  try{
-    const item = await updateItem(itemID, req.body);
-    const message = "Item updated!";
-    res.json({ message, item });
-  } catch (error){
-    const message = "Item not found or could not be updated!";
-    res.json({ message });
-  }
+
+let channel;
+
+// Connect to RabbitMQ and set up the channel
+amqp.connect(RABBITMQ_URL, (error, connection) => {
+    if (error){
+      console.log(error);
+    }
+    if (error) throw error;
+    
+    connection.createChannel((err, ch) => {
+        if (err) throw err;
+        channel = ch;
+
+        // Ensure queues exist
+        ch.assertQueue(TASK_QUEUE, { durable: false });
+        ch.assertQueue(RESPONSE_QUEUE, { durable: false });
+    });
 });
 
-app.get("/books", async (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  const books = await getAllBooks();
-  res.json(books);
+// Socket.io connection
+io.on('connection', (socket) => {
+  console.log('User connected');
+
+  socket.on('requestItems', async () => {
+      try {
+          const items = await getAllItems();
+          socket.emit('itemsFetched', items);
+      } catch (error) {
+          console.error('Error fetching items:', error);
+      }
+  });
+
+  socket.on('addItem', async (newItemData) => {
+      try {
+          const newItem = await createItem(newItemData);
+          io.emit('itemAdded', newItem); // Notify all connected clients
+      } catch (error) {
+          console.error('Error adding new item:', error);
+      }
+  });
+
+  socket.on('disconnect', () => {
+      console.log('User disconnected');
+  });
+
+  // Listen for the 'editItem' event from the client
+  socket.on('editItem', ({ itemId, field, value }) => {
+      // Here, we need to update our database with the new value
+      // After updating the database, can emit an event to all clients to reflect the change in real-time
+      // For now, just emit a placeholder 'itemUpdated' event
+      io.emit('itemUpdated', { itemId, field, value });
+  });
 });
-app.get("/book/:bookID", async (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  const { bookID } = req.params;  
-  const book = await getBook(bookID);
-  res.json(book);
+
+app.get("/items", (req, res) => {
+  // Create a correlationId for this request
+  const correlationId = generateUuid();
+
+  // Listen for a response from the worker on the RESPONSE_QUEUE
+  channel.consume(RESPONSE_QUEUE, (msg) => {
+      if (msg.properties.correlationId === correlationId) {
+          res.json(JSON.parse(msg.content.toString()));
+      }
+  }, { noAck: true });
+
+  // Send the fetch all items task to RabbitMQ
+  channel.sendToQueue(TASK_QUEUE, Buffer.from(JSON.stringify({
+      type: 'FETCH_ALL_ITEMS'
+  })), {
+      correlationId: correlationId,
+      replyTo: RESPONSE_QUEUE
+  });
 });
-app.post("/book", async (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  const book = await createBook(req.body);
-  res.json(book);
-});
-app.put("/book/:bookID", async (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  const { bookID } = req.params; 
-  try{
-    const book = await updateBook(bookID, req.body);
-    const message = "Book updated!";
-    res.json({ message, book });
-  } catch (error){
-    const message = "Book not found or could not be updated!";
-    res.json({ message });
-  }
+
+app.put("/item/:itemId", (req, res) => {
+    const { itemId } = req.params;
+
+    // Create a correlationId for this request
+    const correlationId = generateUuid();
+
+    // Listen for a response from the worker on the RESPONSE_QUEUE
+    channel.consume(RESPONSE_QUEUE, (msg) => {
+        if (msg.properties.correlationId === correlationId) {
+            res.json(JSON.parse(msg.content.toString()));
+        }
+    }, { noAck: true });
+
+    // Send the update task to RabbitMQ
+    channel.sendToQueue(TASK_QUEUE, Buffer.from(JSON.stringify({
+        type: 'UPDATE_ITEM',
+        itemId,
+        data: req.body
+    })), {
+        correlationId: correlationId,
+        replyTo: RESPONSE_QUEUE
+    });    io.emit('itemUpdated', req.body);
+  });
   
-});
-
-app.listen(PORT, () => {
-  console.log(`Server listening on ${PORT}`);
-});
-
+  server.listen(PORT, () => {
+      console.log(`Server listening on ${PORT}`);
+  });
+  
+  function generateUuid() {
+      return Math.random().toString() + Math.random().toString() + Math.random().toString();
+  }
