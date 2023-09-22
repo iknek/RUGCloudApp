@@ -1,43 +1,63 @@
 import { useState, useEffect } from 'react';
+import socket from './socket';  // Assuming you created this socket connection file as instructed
 
 const Handlers = () => {
     const [items, setItems] = useState([]);
     const [selectedItem, setSelectedItem] = useState(null);
 
     useEffect(() => {
-        fetch("/items")
-            .then((res) => res.json())
-            .then((data) => setItems(data))
-            .catch((error) => console.error("Error fetching items:", error));
+        // Request items from the server using socket
+        socket.emit('requestItems');
+
+        // Listen for the 'itemsFetched' event from the server
+        socket.on('itemsFetched', (fetchedItems) => {
+            setItems(fetchedItems);
+        });
+
+        // Listen for the 'itemAdded' event from the server
+        socket.on('itemAdded', (newItem) => {
+            setItems(prevItems => [...prevItems, newItem]);
+        });
+        
+        // Listen for the 'itemUpdated' event from the server
+        socket.on('itemUpdated', (updatedItem) => {
+            console.log("work 16")
+            // Update your state with the updated item
+            setItems(prevItems => {
+                console.log("work 19")
+                return prevItems.map(item => {
+                    if (item._id === updatedItem._id) {
+                        return updatedItem;
+                    }
+                    return item;
+                });
+            });
+        });
+
+        // Clean up the listener when the component is unmounted
+        return () => {
+            socket.off('itemUpdated');
+            socket.off('itemsFetched');
+            socket.off('itemAdded');
+            socket.off('itemUpdated');
+        };
     }, []);
 
     const handleItemClick = (item) => {
         setSelectedItem(item);
-    }
+        console.log("work 37")
+    };
 
-    const handleAddNewItem = async (newItemData) => {
-        try {
-            const response = await fetch("/item", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(newItemData)
-            });
-
-            const data = await response.json();
-
-            if (data && data._id) {
-                setItems(prevItems => [...prevItems, data]);
-            } else {
-                console.error("Error adding new item: Data format unexpected", data);
-            }
-        } catch (error) {
-            console.error("Error adding new item:", error);
-        }
-    }
+    const handleAddNewItem = (newItemData) => {
+        // Send the new item data to the server using socket
+        socket.emit('addItem', newItemData);
+    };
 
     const handleItemEdit = (itemId, field, value) => {
+        // Emit the 'editItem' event to the server with the necessary data
+        socket.emit('editItem', { itemId, field, value });
+
+        // Update the local state
         setItems(prevItems => {
             return prevItems.map(item => {
                 if (item._id === itemId) {
@@ -56,7 +76,7 @@ const Handlers = () => {
                 [field]: value
             }));
         }
-    }
+    };
 
     return {
         items,
@@ -65,6 +85,6 @@ const Handlers = () => {
         handleAddNewItem,
         handleItemEdit
     };
-}
+};
 
 export default Handlers;

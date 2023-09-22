@@ -1,9 +1,7 @@
 require('dotenv').config({ path: '../.env' });
 const Item = require('./models/item'); 
-const express = require("express");
 const { connectDB } = require("./db/connect.js");
 const { getItem, getAllItems, createItem, updateItem } = require("./db/items.js");
-const { getBook, getAllBooks, createBook, updateBook } = require("./db/books.js");
 
 const RABBITMQ_URL = `amqp://${process.env.RABBITMQ_DEFAULT_USER}:${process.env.RABBITMQ_DEFAULT_PASS}@rabbitmq:5672`;
 const express = require("express");

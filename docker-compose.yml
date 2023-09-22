@@ -1,5 +1,15 @@
 version: '3'
 services:
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    ports:
+      - "${RABBITMQ_PORT}:15672" # Management UI
+      - "${RABBITMQ_AMQP_PORT}:5672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+
   server:
     build:
       context: ./server
@@ -7,6 +17,10 @@ services:
       - "${SERVER_PORT}:3001"
     env_file:
       - .env
+    depends_on:
+      - rabbitmq
+      - mongo
+
   client:
     build:
       context: ./client
@@ -14,6 +28,7 @@ services:
       - "${CLIENT_PORT}:3000"
     depends_on:
       - server  # The client depends on the server
+
   worker:  
     build:
       context: ./worker 
@@ -21,6 +36,8 @@ services:
       - "${WORKER_PORT}:3002"  
     env_file:
       - .env
+    depends_on:
+      - rabbitmq
 
   mongo:
     image: mongo
