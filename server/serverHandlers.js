@@ -9,10 +9,15 @@ const RESPONSE_QUEUE = 'item_responses_queue';  // Queue for sending back respon
 
 // Connect to RabbitMQ
 amqp.connect(RABBITMQ_URL, (error, connection) => {
-    if (error) throw error;
+    if (err){
+        setTimeout(connection.createChannel, 5000);
+        console.log(err)
+      }
     connection.createChannel((error, channel) => {
-        if (error) throw error;
-
+        if (err){
+            setTimeout(connection.createChannel, 5000);
+            console.log(err)
+        }
         // Ensure queues exist
         channel.assertQueue(REQUEST_QUEUE, { durable: false });
         channel.assertQueue(RESPONSE_QUEUE, { durable: false });

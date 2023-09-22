@@ -7,12 +7,17 @@ const TASK_QUEUE = 'item_tasks_queue';
 const RESPONSE_QUEUE = 'item_responses_queue';
 
 amqp.connect(RABBITMQ_URL, (error, connection) => {
-    if (error) throw error;
+    if (err){
+        setTimeout(connection.createChannel, 5000);
+        console.log(err)
+      }
     console.log("im fine!")
 
     connection.createChannel(async (err, channel) => {
-        if (err) throw err;
-
+        if (err){
+            setTimeout(connection.createChannel, 5000);
+            console.log(err)
+          }
         channel.assertQueue(TASK_QUEUE, { durable: false });
         channel.assertQueue(RESPONSE_QUEUE, { durable: false });
         console.log("im still fine!")
@@ -27,7 +32,7 @@ amqp.connect(RABBITMQ_URL, (error, connection) => {
                     channel.sendToQueue(RESPONSE_QUEUE, Buffer.from(JSON.stringify(items)), {
                         correlationId: msg.properties.correlationId
                     });
-                    break;
+                    break; 
 
                 case 'CREATE_ITEM':
                     const newItem = await createItem(request.data);
