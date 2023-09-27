@@ -21,6 +21,11 @@ const createItem = async (itemData) => {
     return createdItem;
 };
 
+const deleteItem = async (itemId) => {
+    await connectDB();
+    
+}
+
 const updateItem = async (itemID, itemData) => {
     await connectDB();
     

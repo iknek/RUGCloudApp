@@ -29,9 +29,9 @@ let channel;
 
 // Connect to RabbitMQ and set up the channel
 amqp.connect(RABBITMQ_URL, (error, connection) => {
-    if (err){
+    if (error){
       setTimeout(connection.createChannel, 5000);
-      console.log(err)
+      console.log(error)
     }
     connection.createChannel((err, ch) => {
       if (err){
