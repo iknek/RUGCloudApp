@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: worker-deployment
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       component: worker
@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: worker
-          image: your-worker-image
+          image: byoa4-worker:latest
           ports:
             - containerPort: 3002

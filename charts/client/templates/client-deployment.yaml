@@ -17,6 +17,6 @@ spec:
     spec:
       containers:
         - name: client
-          image: your-client-image
+          image: byoa4-client:latest
           ports:
             - containerPort: 3000
