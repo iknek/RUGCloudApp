@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: server
-          image: byoa4-server:latest
+          image: iknek/serverone:latest
           ports:
             - containerPort: 3001
