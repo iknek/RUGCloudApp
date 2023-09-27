@@ -16,7 +16,9 @@ spec:
         app: client-deployment
     spec:
       containers:
-        - name: client
-          image: byoa4-client:latest
-          ports:
-            - containerPort: 3000
+      - name: client
+        image: byoa4-client:latest
+      imagePullSecrets:
+        - name: regcred
+      ports:
+      - containerPort: 3000
