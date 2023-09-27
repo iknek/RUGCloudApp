@@ -1,0 +1,5 @@
+spec: 
+  destination:
+    server: https://kubernetes.default.svc
+  source: 
+    repoURL: https://gitlab.com/rug-cs/courses/cloud-computing/students/group-4/byoa4.git 
