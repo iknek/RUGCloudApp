@@ -2,15 +2,18 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: client-deployment
+  namespace: default
+  labels: 
+    app: client-deployment
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      component: client
+      app: client-deployment
   template:
     metadata:
       labels:
-        component: client
+        app: client-deployment
     spec:
       containers:
         - name: client
