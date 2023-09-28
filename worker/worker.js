@@ -2,29 +2,22 @@ require('dotenv').config({ path: '../.env' });
 const amqp = require('amqplib/callback_api');
 const { getAllItems, createItem, deleteItem, updateItem } = require("./items.js");
 
-const RABBITMQ_URL = `amqp://user:dmp2qDZl27TBdJoN@my-release-rabbitmq.default.svc.cluster.local:5672`;
+const RABBITMQ_URL = `amqp://user:dmp2qDZ127TBdJON@my-release-rabbitmq.default.svc.cluster.local:5672`;
 const TASK_QUEUE = 'item_tasks_queue';
 const RESPONSE_QUEUE = 'item_responses_queue';
 
-const connectToRabbitMQ = () => {
-    amqp.connect(RABBITMQ_URL, (error, connection) => {
-      if (error) {
-        console.log('Connection Error:', error);
-        // Retry the connection after 5 seconds
-        setTimeout(connectToRabbitMQ, 5000);
-        return;
+amqp.connect(RABBITMQ_URL, (error, connection) => {
+    if (err){
+        setTimeout(connection.createChannel, 5000);
+        console.log(err)
       }
-      console.log("I'm fine!");
-      connection.createChannel((err, channel) => {
-        if (err) {
-          console.log('Channel Error:', err);
-          // Retry creating channel after 5 seconds
-          setTimeout(() => {
-            connection.createChannel();
-          }, 5000);
-          return;
-        }
+    console.log("im fine!")
 
+    connection.createChannel(async (err, channel) => {
+        if (err){
+            setTimeout(connection.createChannel, 5000);
+            console.log(err)
+          }
         channel.assertQueue(TASK_QUEUE, { durable: false });
         channel.assertQueue(RESPONSE_QUEUE, { durable: false });
         console.log("im still fine!")
@@ -68,9 +61,5 @@ const connectToRabbitMQ = () => {
                     });
             }
         }, { noAck: true });
-        });
-  });
-};
-
-connectToRabbitMQ();
-
+    });
+});
