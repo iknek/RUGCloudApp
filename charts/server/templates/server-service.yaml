@@ -6,6 +6,6 @@ spec:
   selector:
     component: server
   ports:
-    - protocol: TCP
-      port: 81
+    - port: 81
       targetPort: 3001
+  type: LoadBalancer

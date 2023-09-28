@@ -1,9 +1,8 @@
 require('dotenv').config({ path: '../.env' });
-const Item = require('./models/item'); 
-const { connectDB } = require("./db/connect.js");
 const { getItem, getAllItems, createItem, updateItem } = require("./db/items.js");
 
-const RABBITMQ_URL = `amqp://${process.env.RABBITMQ_DEFAULT_USER}:${process.env.RABBITMQ_DEFAULT_PASS}@rabbitmq:5672`;
+const RABBITMQ_URL = `amqp://user:dmp2qDZl27TBdJoN@my-release-rabbitmq.default.svc.cluster.local:5672`;
+
 const express = require("express");
 const socketIo = require("socket.io");
 const amqp = require('amqplib/callback_api');
@@ -17,7 +16,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-      origin: "http://localhost:3000", // This is the origin of client app.
+      origin: "http://10.96.119.212.default.svc.cluster.local:80", // This is the origin of client app.
       methods: ["GET", "POST"],
       credentials: true
   }
@@ -26,26 +25,26 @@ const io = socketIo(server, {
 app.use(bodyParser.json());
 
 let channel;
-
-// Connect to RabbitMQ and set up the channel
-amqp.connect(RABBITMQ_URL, (error, connection) => {
-    if (error){
-      setTimeout(connection.createChannel, 5000);
-      console.log(error)
-    }
-    connection.createChannel((err, ch) => {
-      if (err){
-        setTimeout(connection.createChannel, 5000);
-        console.log(err)
+const connectToRabbitMQ = () => {
+    amqp.connect(RABBITMQ_URL, (error, connection) => {
+      if (error) {
+        console.log('Connection Error:', error);
+        // Retry the connection after 5 seconds
+        setTimeout(connectToRabbitMQ, 5000);
+        return;
       }
-        channel = ch;
-
-        // Ensure queues exist
-        ch.assertQueue(TASK_QUEUE, { durable: false });
-        ch.assertQueue(RESPONSE_QUEUE, { durable: false });
-    });
-});
-
+      connection.createChannel((err, ch) => {
+        if (err){
+          console.log(err)
+        }
+          channel = ch;
+          // Ensure queues exist
+          ch.assertQueue(TASK_QUEUE, { durable: false });
+          ch.assertQueue(RESPONSE_QUEUE, { durable: false });
+      });
+  });
+}
+connectToRabbitMQ();
 // Socket.io connection
 io.on('connection', (socket) => {
   console.log('User connected');
@@ -132,3 +131,4 @@ app.put("/item/:itemId", (req, res) => {
   function generateUuid() {
       return Math.random().toString() + Math.random().toString() + Math.random().toString();
   }
+  

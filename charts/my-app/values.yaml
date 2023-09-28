@@ -1,0 +1,4 @@
+rabbitmq:
+  auth:
+    username: admin
+    password: secretpassword

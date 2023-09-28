@@ -17,8 +17,6 @@ spec:
     spec:
       containers:
       - name: client
-        image: byoa4-client:latest
-      imagePullSecrets:
-        - name: regcred
-      ports:
-      - containerPort: 3000
+        image: iknek/clientone:latest
+        ports:
+        - containerPort: 3000

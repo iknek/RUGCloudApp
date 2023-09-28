@@ -5,6 +5,3 @@ dependencies:
   - name: mongodb
     version: "14.0.1"
     repository: "https://charts.bitnami.com/bitnami"
-  - name: rabbitmq
-    version: "12.1.7"  
-    repository: "https://charts.bitnami.com/bitnami"

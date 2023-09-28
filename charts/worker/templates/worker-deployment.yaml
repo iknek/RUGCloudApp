@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
         - name: worker
-          image: byoa4-worker:latest
+          image: iknek/workerone:latest
           ports:
             - containerPort: 3002
