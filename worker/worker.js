@@ -2,7 +2,7 @@ require('dotenv').config({ path: '../.env' });
 const amqp = require('amqplib/callback_api');
 const { getAllItems, createItem, deleteItem, updateItem } = require("./items.js");
 
-const RABBITMQ_URL = `amqp://user:dmp2qDZ127TBdJON@rabbit-rabbitmq.default.svc.cluster.local:5672`;
+const RABBITMQ_URL = `amqp://user:dmp2qDZ127TBdJON@rabbit-rabbitmq-headless.default.svc.cluster.local:5672`;
 const TASK_QUEUE = 'item_tasks_queue';
 const RESPONSE_QUEUE = 'item_responses_queue';
 
