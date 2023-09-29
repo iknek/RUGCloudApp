@@ -15,3 +15,7 @@ spec:
             name: client-service
             port:
               number: 80
+          service:
+            name: client-service
+            port:
+              number: 80

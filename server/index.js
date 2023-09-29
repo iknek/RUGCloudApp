@@ -15,7 +15,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-      origin: "http://127.0.0.1:16049", // This is the origin of client app.
+      origin: "*", 
       methods: ["GET", "POST"],
       credentials: true
   }
@@ -47,11 +47,12 @@ const connectToRabbitMQ = () => {
 }
 connectToRabbitMQ();
 // Socket.io connection
-io.on('connection', (err, socket) => {
-  if (err){
-    console.log(err)
-    }  
+io.on('connection', (socket) => {
   console.log('User connected');
+  
+  socket.on('error', (err) => {
+    console.log('Socket error:', err);
+  });
 
   socket.on('requestItems', async () => {
       try {
