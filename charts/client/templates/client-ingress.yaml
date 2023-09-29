@@ -2,14 +2,11 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: client-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
   namespace: default
 spec:
   ingressClassName: nginx
   rules: 
-  - host: example.com  # Change this to a domain you own or can control
-    http:
+  - http:
       paths:
       - path: /
         pathType: Prefix

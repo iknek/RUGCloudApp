@@ -1,7 +1,7 @@
 require('dotenv').config({ path: '../.env' });
 const { getItem, getAllItems, createItem, updateItem } = require("./db/items.js");
 
-const RABBITMQ_URL = `amqp://user:dmp2qDZ127TBdJON@rabbit-rabbitmq.default.svc.cluster.local:5672`;
+const RABBITMQ_URL = `amqp://user:dmp2qDZ127TBdJON@rabbit-rabbitmq-0.rabbit-rabbitmq-headless.default.svc.cluster.local:5672`;
 const express = require("express");
 const socketIo = require("socket.io");
 const amqp = require('amqplib/callback_api');
@@ -15,7 +15,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-      origin: "http://client-service.default.svc.cluster.local:80", // This is the origin of client app.
+      origin: "http://127.0.0.1:16049", // This is the origin of client app.
       methods: ["GET", "POST"],
       credentials: true
   }

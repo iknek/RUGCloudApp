@@ -12,9 +12,9 @@ echo Installing RabbitMQ
 helm delete rabbit
 helm install rabbit --set auth.username=user,auth.password=dmp2qDZ127TBdJON,auth.erlangCookie=secretcookie bitnami/rabbitmq
 
-echo Installing Ingress
+echo Installing & Setup Ingress
 minikube addons enable ingress 
-
+minikube tunnel
 
 echo Done 
 

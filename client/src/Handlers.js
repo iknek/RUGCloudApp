@@ -4,11 +4,11 @@ import socket from './socket';  // Assuming you created this socket connection f
 const Handlers = () => {
     const [items, setItems] = useState([]);
     const [selectedItem, setSelectedItem] = useState(null);
-
+    console.log("Handlers.js called");
     useEffect(() => {
         // Request items from the server using socket
         socket.emit('requestItems');
-
+        console.log("UseEffect");
         // Listen for the 'itemsFetched' event from the server
         socket.on('itemsFetched', (fetchedItems) => {
             setItems(fetchedItems);
@@ -16,6 +16,7 @@ const Handlers = () => {
 
         // Listen for the 'itemAdded' event from the server
         socket.on('itemAdded', (newItem) => {
+            console.log("added");
             setItems(prevItems => [...prevItems, newItem]);
         });
         
