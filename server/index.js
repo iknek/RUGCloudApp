@@ -1,7 +1,7 @@
 require('dotenv').config({ path: '../.env' });
 const { getItem, getAllItems, createItem, updateItem } = require("./db/items.js");
 
-const RABBITMQ_URL = `amqp://user:dmp2qDZ127TBdJON@my-release-rabbitmq.default.svc.cluster.local:5672`;
+const RABBITMQ_URL = `amqp://user:dmp2qDZ127TBdJON@rabbit-rabbitmq.default.svc.cluster.local:5672`;
 const express = require("express");
 const socketIo = require("socket.io");
 const amqp = require('amqplib/callback_api');
@@ -32,10 +32,12 @@ const connectToRabbitMQ = () => {
         setTimeout(connectToRabbitMQ, 5000);
         return;
       }
+      console.log("im fine!")
       connection.createChannel((err, ch) => {
         if (err){
           console.log(err)
         }
+        console.log("im still fine after creating channel!")
           channel = ch;
           // Ensure queues exist
           ch.assertQueue(TASK_QUEUE, { durable: false });
@@ -45,7 +47,10 @@ const connectToRabbitMQ = () => {
 }
 connectToRabbitMQ();
 // Socket.io connection
-io.on('connection', (socket) => {
+io.on('connection', (err, socket) => {
+  if (err){
+    console.log(err)
+    }  
   console.log('User connected');
 
   socket.on('requestItems', async () => {
