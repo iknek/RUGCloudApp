@@ -2,15 +2,17 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: server-deployment
+  labels: 
+    app: server-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      component: server
+      app: server-deployment
   template:
     metadata:
       labels:
-        component: server
+        app: server-deployment
     spec:
       containers:
         - name: server

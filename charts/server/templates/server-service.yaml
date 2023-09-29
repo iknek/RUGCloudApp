@@ -4,9 +4,10 @@ metadata:
   name: server-service
 spec:
   selector:
-    component: server
+    app: server-deployment
   ports:
     - protocol: TCP
       port: 81
       targetPort: 3001
-  type: LoadBalancer
+      nodePort: 30081
+  type: NodePort

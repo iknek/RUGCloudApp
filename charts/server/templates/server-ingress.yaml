@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: server-ingress
+spec:
+  ingressClassName: nginx
+  rules: 
+  - http:
+      paths:
+      - path: /serever
+        pathType: Prefix
+        backend:
+          service:
+            name: server-service
+            port:
+              number: 81
