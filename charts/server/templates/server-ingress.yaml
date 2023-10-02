@@ -14,4 +14,4 @@ spec:
           service:
             name: server-service
             port:
-              number: 81
+              number: {{ .Values.ports.ingressPort }}

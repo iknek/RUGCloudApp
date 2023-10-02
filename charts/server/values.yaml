@@ -1,0 +1,9 @@
+replicaCount: 1
+image:
+  repository: iknek/serverone
+  tag: latest
+ports:
+  containerPort: 3001
+  servicePort: 81
+  nodePort: 30081
+  ingressPort: 81

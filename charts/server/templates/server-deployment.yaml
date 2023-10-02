@@ -6,7 +6,7 @@ metadata:
   labels: 
     app: server-deployment
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: server-deployment
@@ -17,6 +17,6 @@ spec:
     spec:
       containers:
         - name: server
-          image: iknek/serverone:latest
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           ports:
-            - containerPort: 3001
+            - containerPort: {{ .Values.ports.containerPort }}
