@@ -7,5 +7,5 @@ spec:
     component: worker
   ports:
     - protocol: TCP
-      port: 82
-      targetPort: 3002
+      port: {{ .Values.ports.servicePort }}
+      targetPort: {{ .Values.ports.containerPort }}

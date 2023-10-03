@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: worker-deployment
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       component: worker
@@ -14,6 +14,11 @@ spec:
     spec:
       containers:
         - name: worker
-          image: iknek/workerone:latest
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          envFrom:
+          - configMapRef:
+              name: app-config  
+          - secretRef:
+              name: app-secret
           ports:
-            - containerPort: 3002
+            - containerPort: {{ .Values.ports.containerPort }}

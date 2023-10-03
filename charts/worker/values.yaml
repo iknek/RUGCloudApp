@@ -1,1 +1,7 @@
 replicaCount: 1
+image:
+  repository: iknek/workerone
+  tag: latest
+ports:
+  containerPort: 3002
+  servicePort: 82
