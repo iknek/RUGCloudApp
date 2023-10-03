@@ -1,0 +1,9 @@
+replicaCount: 1
+image:
+  repository: iknek/clientone
+  tag: latest
+ports:
+  containerPort: 3000
+  servicePort: 80
+  nodePort: 30080
+  ingressPort: 80

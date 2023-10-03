@@ -16,7 +16,12 @@ spec:
         app: server-deployment
     spec:
       containers:
-        - name: server
-          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
-          ports:
-            - containerPort: {{ .Values.ports.containerPort }}
+      - name: server
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        envFrom:
+        - configMapRef:
+            name: app-config  
+        - secretRef:
+            name: app-secret
+        ports:
+        - containerPort: {{ .Values.ports.containerPort }}

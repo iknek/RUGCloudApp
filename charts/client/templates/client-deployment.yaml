@@ -6,7 +6,7 @@ metadata:
   labels: 
     app: client-deployment
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: client-deployment
@@ -17,6 +17,6 @@ spec:
     spec:
       containers:
       - name: client
-        image: iknek/clientone:latest
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         ports:
-        - containerPort: 3000
+        - containerPort: {{ .Values.ports.containerPort }}

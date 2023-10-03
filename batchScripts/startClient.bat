@@ -1,4 +1,4 @@
-@echo off
+::@echo off
 
 :: Navigate to the directory containing the Kubernetes YAML files
 cd charts/client/templates

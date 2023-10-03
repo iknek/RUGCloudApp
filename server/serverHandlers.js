@@ -1,22 +1,26 @@
 require("dotenv").config({ path: '../env' });
 const amqp = require('amqplib/callback_api');  
-const { getItem, getAllItems, createItem, updateItem } = require("./db/items.js");  
+const {getAllItems} = require("./db/items.js");  
 
 // RabbitMQ setup
-const RABBITMQ_URL = `amqp://${process.env.RABBITMQ_DEFAULT_USER}:${process.env.RABBITMQ_DEFAULT_PASS}@rabbitmq:5672`;
+const mqUser = process.env.RABBITMQ_DEFAULT_USER;
+const mqPassword = process.env.RABBITMQ_DEFAULT_PASS;
+const mqPort = process.env.RABBITMQ_PORT;
+
+const RABBITMQ_URL = `amqp://${mqUser}:${mqPassword}@rabbit-rabbitmq-0.rabbit-rabbitmq-headless.default.svc.cluster.local:${mqPort}`;
 const REQUEST_QUEUE = 'item_tasks_queue';  // Queue for incoming CRUD tasks from the client
 const RESPONSE_QUEUE = 'item_responses_queue';  // Queue for sending back responses to the client
 
 // Connect to RabbitMQ
 amqp.connect(RABBITMQ_URL, (error, connection) => {
-    if (err){
+    if (error){
         setTimeout(connection.createChannel, 5000);
-        console.log(err)
+        console.log(error)
       }
     connection.createChannel((error, channel) => {
-        if (err){
+        if (error){
             setTimeout(connection.createChannel, 5000);
-            console.log(err)
+            console.log(error)
         }
         // Ensure queues exist
         channel.assertQueue(REQUEST_QUEUE, { durable: false });

@@ -8,7 +8,7 @@ spec:
     app: client-deployment
   ports:
   - protocol: TCP
-    port: 80
-    targetPort: 3000
-    nodePort: 30080
+    port: {{ .Values.ports.servicePort }}
+    targetPort: {{ .Values.ports.containerPort }}
+    nodePort: {{ .Values.ports.nodePort }}
   type: NodePort

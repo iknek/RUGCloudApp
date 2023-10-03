@@ -2,7 +2,11 @@ require('dotenv').config({ path: '../.env' });
 const amqp = require('amqplib/callback_api');
 const { getAllItems, createItem, deleteItem, updateItem } = require("./items.js");
 
-const RABBITMQ_URL = `amqp://user:dmp2qDZ127TBdJON@rabbit-rabbitmq-headless.default.svc.cluster.local:5672`;
+const mqUser = process.env.RABBITMQ_DEFAULT_USER;
+const mqPassword = process.env.RABBITMQ_DEFAULT_PASS;
+const mqPort = process.env.RABBITMQ_PORT;
+
+const RABBITMQ_URL = `amqp://${mqUser}:${mqPassword}@rabbit-rabbitmq-0.rabbit-rabbitmq-headless.default.svc.cluster.local:${mqPort}`;
 const TASK_QUEUE = 'item_tasks_queue';
 const RESPONSE_QUEUE = 'item_responses_queue';
 
@@ -10,6 +14,7 @@ const connectToRabbitMQ = () => {
     amqp.connect(RABBITMQ_URL, (error, connection) => {
       if (error) {
         console.log('Connection Error:', error);
+        console.log(RABBITMQ_URL);
         // Retry the connection after 5 seconds
         setTimeout(connectToRabbitMQ, 5000);
         return;

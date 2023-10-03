@@ -1,14 +1,18 @@
 require('dotenv').config({ path: '../.env' });
-const { getItem, getAllItems, createItem, updateItem } = require("./db/items.js");
+const {getAllItems, createItem} = require("./db/items.js");
 
-const RABBITMQ_URL = `amqp://user:dmp2qDZ127TBdJON@rabbit-rabbitmq-0.rabbit-rabbitmq-headless.default.svc.cluster.local:5672`;
+// RabbitMQ setup
+const mqUser = process.env.RABBITMQ_DEFAULT_USER;
+const mqPassword = process.env.RABBITMQ_DEFAULT_PASS;
+const mqPort = process.env.RABBITMQ_PORT;   
+const RABBITMQ_URL = `amqp://${mqUser}:${mqPassword}@rabbit-rabbitmq-0.rabbit-rabbitmq-headless.default.svc.cluster.local:${mqPort}`;
 const express = require("express");
 const socketIo = require("socket.io");
 const amqp = require('amqplib/callback_api');
 const bodyParser = require("body-parser");
 const http = require('http');
 
-const PORT = 3001;
+const PORT = process.env.SERVER_PORT;
 const TASK_QUEUE = 'item_tasks_queue';
 const RESPONSE_QUEUE = 'item_responses_queue';
 const app = express();
