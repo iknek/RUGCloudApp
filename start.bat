@@ -1,6 +1,3 @@
-:: Start minikube
-:: minikube start 
-
 :: Start all services/components
 .\startAppSvc.bat
 .\startHelms.bat

@@ -1,4 +1,10 @@
-::@echo off
+@echo off
+setlocal enabledelayedexpansion
+
+:: Load Environment Variables from .env file
+for /f "tokens=1,2 delims==" %%i in (.env) do (
+    set %%i=%%j
+)
 
 :: Navigate to the directory containing the Kubernetes YAML files
 cd charts/my-app
@@ -12,10 +18,11 @@ helm install my-app-mongodb ./ -f secrets.yaml
 :: RabbitMQ
 echo Installing RabbitMQ
 helm delete rabbit 
-helm install rabbit --set auth.username=user,auth.password=dmp2qDZ127TBdJON,auth.erlangCookie=secretcookie bitnami/rabbitmq
+helm install rabbit --set auth.username=%RABBITMQ_DEFAULT_USER%,auth.password=%RABBITMQ_DEFAULT_PASS%,auth.erlangCookie=secretcookie bitnami/rabbitmq
 
 :: Secrets and ConfigMap
-cd ../my-app
+cd ../my-app/configFiles
+sops -d secrets.enc.yaml > secrets.yaml
 kubectl apply -f secrets.yaml
 kubectl apply -f configmap.yaml
 
