@@ -2,6 +2,8 @@
 .\startAppSvc.bat
 .\startHelms.bat
 
+minikube tunnel
+
 echo Client URL:
 minikube service client-service --url
 
