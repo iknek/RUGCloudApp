@@ -9,7 +9,7 @@ for /f "tokens=1,2 delims==" %%i in (.env) do (
 :: Navigate to the directory containing the Kubernetes YAML files
 cd charts/my-app
 
-MongoDB Setup
+:: MongoDB Setup
 ::echo Installing MongoDB
 ::helm dependency update ./
 ::helm delete my-app-mongodb ./

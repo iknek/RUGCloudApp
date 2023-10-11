@@ -3,14 +3,29 @@ const { connectDB } = require("./connect");
 const Item = require('./item'); // Import the item model
 
 const getItem = async (itemID) => {
+    console.log("is it cause of this? in items?");
     await connectDB();
     return Item.findOne({ _id: itemID});
 };
 
 const getAllItems = async () => {
     await connectDB();
-
-    return Item.find();
+    console.log("here i am at 12 in items.js");
+    let retries = 0;
+    retryCount = 5;
+    while (retries < retryCount) {
+      try {
+        const items = await Item.find();
+        return items;
+      } catch (error) {
+        retries++;
+        console.log(error);
+        console.log(`Retrying... (${retries}/${retryCount})`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+  
+    throw new Error('Max retries reached');
 };
 
 const createItem = async (itemData) => {
@@ -46,8 +61,6 @@ const updateItem = async (itemID, itemData) => {
         throw new Error; //throw an error in case the itemID was an unvalid mongoID
     }  
 };
-
-
 
 module.exports = {
     getItem,

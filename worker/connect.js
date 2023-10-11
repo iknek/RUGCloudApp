@@ -7,7 +7,7 @@ const dbPassword = process.env.MONGO_INITDB_ROOT_PASSWORD;
 const dbPort = process.env.MONGO_PORT;
 
 // MongoDB connection string
-const uri = `mongodb://${dbUser}:${dbPassword}@my-app-mongodb.default.svc.cluster.local:${dbPort}`;
+const uri = `mongodb://${dbUser}:${dbPassword}@my-mongodb.default.svc.cluster.local:${dbPort}`;
 
 const connectDB = async () => {
   try {
@@ -17,10 +17,10 @@ const connectDB = async () => {
       });
   } catch (error) {
       console.error("MongoDB connection error:", error);
-      process.exit(1);
+      console.log("here?? why in connect?");
+      connectDB();
   }
 };
-
 
 // Exports
 module.exports = {

@@ -1,6 +1,6 @@
 // Imports
 const { connectDB } = require("./connect");
-const Item = require('../models/item'); // Import the item model
+const Item = require('./item'); // Import the item model
 
 const getItem = async (itemID) => {
     await connectDB();

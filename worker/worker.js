@@ -27,13 +27,14 @@ const connectToRabbitMQ = () => {
           return;
         }
         channel = ch;
+        console.log("here at 30 i am");
         ch.assertQueue(TASK_QUEUE, { durable: false });
         ch.assertQueue(RESPONSE_QUEUE, { durable: false });
 
         channel.consume(TASK_QUEUE, async (msg) => {
           const request = JSON.parse(msg.content.toString());
           let response = { type: request.type };
-        
+          console.log("here at 37 i am");
           switch (request.type) {
             case 'GET_ALL_ITEMS':
               response.data = await getAllItems();
@@ -42,10 +43,11 @@ const connectToRabbitMQ = () => {
               response.data = await createItem(request.data);
               break;
           }
-        
+          console.log("here at 46 i am");
           channel.sendToQueue(RESPONSE_QUEUE, Buffer.from(JSON.stringify(response)), {
             correlationId: msg.properties.correlationId
           });
+          console.log("here at 50 i am");
         }, { noAck: true });
       });
     });
