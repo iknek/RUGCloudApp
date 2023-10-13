@@ -12,6 +12,5 @@ data "ct_config" "flatcar" {
         sshkey = file("${path.module}/id_rsa.pub")
         imagename = var.imagename
         ip = openstack_networking_floatingip_v2.float_ip.address
-        bootstrap_script = file("${path.module}/bootstrap_k3s.sh")
     })
 }

@@ -94,13 +94,3 @@ resource "openstack_networking_secgroup_rule_v2" "basic_https" {
     remote_ip_prefix = "0.0.0.0/0"
     security_group_id = openstack_networking_secgroup_v2.basic.id
 }
-
-resource "openstack_networking_secgroup_rule_v2" "kubernetes_ports" {
-  direction = "ingress"
-  ethertype = "IPv4"
-  protocol = "tcp"
-  port_range_min = 6443
-  port_range_max = 6443
-  remote_ip_prefix = "0.0.0.0/0"
-  security_group_id = openstack_networking_secgroup_v2.basic.id
-}

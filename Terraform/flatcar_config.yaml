@@ -8,40 +8,22 @@ passwd:
       ssh_authorized_keys:
         - ${sshkey}
 
-# This starts the very simple Docker container
+# This starts/installs k3s
 systemd:
   units:
-    - name: docker.service
-      enabled: true
-
-    # Docker container started as a systemd service
-    - name: helloworld.service
-      enabled: true
-      contents: |
-        [Unit]
-        Description=Hello World
-        After=docker.service
-        Requires=docker.service
-
-        [Service]
-        TimeoutStartSec=0
-        ExecStartPre=-/usr/bin/docker kill helloworld
-        ExecStartPre=-/usr/bin/docker rm helloworld
-        ExecStartPre=/usr/bin/docker pull ${imagename}
-        ExecStart=/usr/bin/docker run --name helloworld -p 80:80 ${imagename}
-
-        [Install]
-        WantedBy=multi-user.target
-
     - name: k3s.service
       enabled: true
       contents: |
         [Unit]
-        Description=Bootstrap K3s
+        Description=K3S service
         After=network-online.target
 
         [Service]
-        ExecStart=/usr/local/bin/bootstrap_k3s.sh
+        Type=exec
+        ExecStartPre=/usr/bin/curl -sfL https://get.k3s.io -o /opt/k3s_install.sh
+        ExecStartPre=/usr/bin/chmod +x /opt/k3s_install.sh
+        ExecStart=/opt/k3s_install.sh --disable=traefik --disable=local-storage
+        ExecStartPost=/usr/bin/echo "K3s Installed Successfully" > /dev/console
 
         [Install]
         WantedBy=multi-user.target
