@@ -8,14 +8,14 @@ passwd:
       ssh_authorized_keys:
         - ${sshkey}
 
-# This starts the very simple Master K8s nd
+# This starts the very simple worker K8s nd
 systemd:
   units:
     - name: k3s.service
       enabled: true
       contents: |
         [Unit]
-        Description=Master K8S
+        Description=worker K8S
         Documentation=https://k3s.io
         After=network.target
 
@@ -26,7 +26,7 @@ systemd:
         ExecStartPre=/usr/bin/curl -sfL https://get.k3s.io -o /tmp/k3s-install.sh
         ExecStartPre=/usr/bin/chmod +x /tmp/k3s-install.sh
         ExecStartPre=/usr/bin/bash /tmp/k3s-install.sh
-        ExecStart=/usr/local/bin/k3s server token=master
+        ExecStart=/usr/local/bin/k3s agent --server https://10.10.0.94:6443 token=master
         Type=notify
         Restart=always
         RestartSec=5
