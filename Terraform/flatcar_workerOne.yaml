@@ -20,8 +20,8 @@ systemd:
         After=network.target
 
         [Service]
-        Environment="K3S_TOKEN=K10c45f0114812572fba0f917c68a963be4029aa0188fef3c1acaab35adc84da14a::server:93a13f6c263675c087dbb756d14b41a7"
-        Environment="K3S_URL=https://10.10.1.163:6443"
+        Environment="K3S_TOKEN=K10435442d85ed9101d4c04cc9c643f3db66e98c369cabde286d47a3eee27075f68::server:93a13f6c263675c087dbb756d14b41a7"
+        Environment="K3S_URL=https://10.10.3.149:6443"
         ExecStartPre=/usr/bin/bash -c "curl -sfL https://get.k3s.io | sh -"
         ExecStart=/usr/local/bin/k3s agent
         Type=notify
@@ -36,3 +36,11 @@ systemd:
 
         [Install]
         WantedBy=multi-user.target
+    
+
+
+
+
+
+
+

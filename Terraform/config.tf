@@ -26,3 +26,16 @@ data "ct_config" "worker" {
         ip = openstack_networking_floatingip_v2.float_ip.address
     })
 }
+
+data "ct_config" "workerTwo" {
+    strict = true
+    pretty_print = false
+
+    # Render the template in the given file
+    content = templatefile("${path.module}/flatcar_workerOne.yaml", {
+        # Use these values to fill the template
+        sshkey = file("${path.module}/id_rsa.pub")
+        imagename = var.imagename
+        ip = openstack_networking_floatingip_v2.float_ip.address
+    })
+}
