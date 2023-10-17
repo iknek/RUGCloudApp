@@ -26,7 +26,7 @@ systemd:
         ExecStartPre=/usr/bin/curl -sfL https://get.k3s.io -o /tmp/k3s-install.sh
         ExecStartPre=/usr/bin/chmod +x /tmp/k3s-install.sh
         ExecStartPre=/usr/bin/bash /tmp/k3s-install.sh
-        ExecStart=/usr/local/bin/k3s server token=master
+        ExecStart=/usr/local/bin/k3s server --token=K10475a40ad0a5aa2087797d95a837500944d425ce694eb178009f0337c03ff77dd
         Type=notify
         Restart=always
         RestartSec=5

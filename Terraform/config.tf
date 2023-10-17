@@ -19,7 +19,7 @@ data "ct_config" "worker" {
     pretty_print = false
 
     # Render the template in the given file
-    content = templatefile("${path.module}/flatcar_config.yaml", {
+    content = templatefile("${path.module}/flatcar_workerOne.yaml", {
         # Use these values to fill the template
         sshkey = file("${path.module}/id_rsa.pub")
         imagename = var.imagename

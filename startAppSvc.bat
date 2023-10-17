@@ -10,11 +10,7 @@ for /f "tokens=1,2 delims==" %%i in (.env) do (
 cd charts/my-app
 
 :: MongoDB Setup
-::echo Installing MongoDB
-::helm dependency update ./
-::helm delete my-app-mongodb ./
-::helm install my-app-mongodb ./ -f secrets.yaml
-helm install my-mongodb bitnami/mongodb --set auth.rootPassword=z2hQ4TBZmf
+helm install my-mongodb bitnami/mongodb --set auth.rootPassword=%MONGO_PASS%
 
 :: RabbitMQ
 echo Installing RabbitMQ

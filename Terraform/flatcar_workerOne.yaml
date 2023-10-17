@@ -20,13 +20,10 @@ systemd:
         After=network.target
 
         [Service]
-        ExecStartPre=-/usr/bin/systemctl stop k3s
-        ExecStartPre=-/usr/bin/systemctl disable k3s
-        ExecStartPre=-/usr/bin/rm -rf /var/lib/rancher/k3s
-        ExecStartPre=/usr/bin/curl -sfL https://get.k3s.io -o /tmp/k3s-install.sh
-        ExecStartPre=/usr/bin/chmod +x /tmp/k3s-install.sh
-        ExecStartPre=/usr/bin/bash /tmp/k3s-install.sh
-        ExecStart=/usr/local/bin/k3s agent --server https://10.10.0.94:6443 token=master
+        Environment="K3S_TOKEN=K10c45f0114812572fba0f917c68a963be4029aa0188fef3c1acaab35adc84da14a::server:93a13f6c263675c087dbb756d14b41a7"
+        Environment="K3S_URL=https://10.10.1.163:6443"
+        ExecStartPre=/usr/bin/bash -c "curl -sfL https://get.k3s.io | sh -"
+        ExecStart=/usr/local/bin/k3s agent
         Type=notify
         Restart=always
         RestartSec=5
