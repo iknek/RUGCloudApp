@@ -5,3 +5,4 @@ id_rsa*
 *.img
 *openrc*
 secrets.yaml
+variables.tfvars

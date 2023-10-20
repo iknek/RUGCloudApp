@@ -44,8 +44,9 @@ systemd:
 
         [Service]
         Type=oneshot
-        ExecStart=/usr/bin/bash -c "echo 'apiVersion: storage.k8s.io/v1\nkind: StorageClass\nmetadata:\n  name: cinder-basic\nprovisioner: kubernetes.io/cinder\n' > /home/core/cinder-storageclass.yaml && sudo kubectl apply -f /home/core/cinder-storageclass.yaml"
-
+        ExecStartPre=/usr/bin/bash -c "echo 'apiVersion: storage.k8s.io/v1\nkind: StorageClass\nmetadata:\n  name: cinder-storage\nprovisioner: kubernetes.io/cinder\nparameters:\n  availability: nova' > /home/core/cinder-storageclass.yaml"
+        ExecStartPre=/usr/bin/bash -c "sudo kubectl apply -f /home/core/cinder-storageclass.yaml"
+        ExecStart=/usr/bin/bash -c "echo 'apiVersion: v1\nkind: PersistentVolumeClaim\nmetadata:\n  name: test-pvc\nspec:\n  accessModes:\n    - ReadWriteOnce\n  storageClassName: cinder-storage\n  resources:\n    requests:\n      storage: 1Gi' > /home/core/test-pvc.yaml && sudo kubectl apply -f /home/core/test-pvc.yaml"
         [Install]
         WantedBy=multi-user.target  
     - name: install-helm.service
@@ -88,3 +89,20 @@ systemd:
 
         [Install]
         WantedBy=multi-user.target
+    - name: apply-cinder-storageclass2.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Apply Cinder StorageClass2
+        After=k3s.service
+
+        [Service]
+        Type=oneshot
+        ExecStartPre=/usr/bin/bash -c "git clone https://github.com/kubernetes/cloud-provider-openstack"
+        ExecStart=/usr/bin/bash -c "cd cloud-provider-openstack && sudo kubectl -f manifests/cinder-csi-plugin/ apply"
+        [Install]
+        WantedBy=multi-user.target  
+
+
+
+        
