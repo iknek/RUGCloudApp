@@ -1,7 +1,0 @@
-apiVersion: v2
-name: my-app
-version: 0.1.0
-dependencies:
-  - name: mongodb
-    version: "14.0.1"
-    repository: "https://charts.bitnami.com/bitnami"

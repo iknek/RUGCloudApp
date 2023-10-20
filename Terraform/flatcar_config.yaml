@@ -50,3 +50,19 @@ systemd:
 
         [Install]
         WantedBy=multi-user.target  
+    - name: install-helm.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Install Helm
+        After=k3s.service apply-cinder-storageclass.service
+        [Service]
+        Type=oneshot
+        Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/bin"
+        ExecStartPre=/usr/bin/bash -c "curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3"
+        ExecStartPre=/usr/bin/bash -c "chmod 700 get_helm.sh"
+        ExecStart=/usr/bin/bash -c "HELM_INSTALL_DIR=/opt/bin ./get_helm.sh"        
+
+        [Install]
+        WantedBy=multi-user.target
+          

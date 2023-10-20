@@ -24,7 +24,7 @@ const io = socketIo(server, {
     credentials: true
   }
 });
-
+console.log("27 in index");
 app.use(bodyParser.json());
 
 let channel;
@@ -34,8 +34,10 @@ const connectToRabbitMQ = async () => {
         channel = await connection.createChannel();
         await channel.assertQueue(TASK_QUEUE, { durable: false });
         await channel.assertQueue(RESPONSE_QUEUE, { durable: false });
+        console.log("37 in index");
         channel.consume(RESPONSE_QUEUE, (msg) => {
             const response = JSON.parse(msg.content.toString());
+            console.log("37 in index. consuming");
             switch(response.type) {
                 case 'GET_ALL_ITEMS':
                 io.emit('itemsFetched', response.data);
@@ -55,7 +57,7 @@ connectToRabbitMQ();
 
 io.on('connection', (socket) => {
   console.log('User connected');
-  
+  console.log("37 in index");
   socket.on('requestItems', () => {
     const correlationId = generateUuid();
     channel.sendToQueue(TASK_QUEUE, Buffer.from(JSON.stringify({

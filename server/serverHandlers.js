@@ -25,16 +25,17 @@ amqp.connect(RABBITMQ_URL, (error, connection) => {
         // Ensure queues exist
         channel.assertQueue(REQUEST_QUEUE, { durable: false });
         channel.assertQueue(RESPONSE_QUEUE, { durable: false });
-
+        console.log("28 in handlers.");
         // Listen for messages in the request queue
         channel.consume(REQUEST_QUEUE, async (message) => {
             const task = JSON.parse(message.content);
-
+            console.log("32 in handlers. Consuming");
             // Handle the task based on its type
             let response;
             switch(task.type) {
                 case 'GET_ALL_ITEMS':
                     response = await getAllItems();
+                    console.log("38 in handlers. get all");
                     break;
                 // TODO: Handle other task types
                 default:

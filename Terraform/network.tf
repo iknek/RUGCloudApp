@@ -75,6 +75,50 @@ resource "openstack_networking_secgroup_rule_v2" "basic_ssh" {
     security_group_id = openstack_networking_secgroup_v2.basic.id
 }
 
+//For client svc nodeport
+resource "openstack_networking_secgroup_rule_v2" "basic_nodeport" {
+    direction = "ingress"
+    ethertype = "IPv4"
+    protocol = "tcp"
+    port_range_min = 30080
+    port_range_max = 30080
+    remote_ip_prefix = "0.0.0.0/0"
+    security_group_id = openstack_networking_secgroup_v2.basic.id
+}
+
+//RabbitMQ
+resource "openstack_networking_secgroup_rule_v2" "basic_rabbitmq_15672" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 15672
+  port_range_max    = 15672
+  remote_ip_prefix  = "0.0.0.0/0"
+  security_group_id = openstack_networking_secgroup_v2.basic.id
+}
+
+resource "openstack_networking_secgroup_rule_v2" "basic_rabbitmq_5672" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 5672
+  port_range_max    = 5672
+  remote_ip_prefix  = "0.0.0.0/0"
+  security_group_id = openstack_networking_secgroup_v2.basic.id
+}
+//RabbitMQ
+
+resource "openstack_networking_secgroup_rule_v2" "basic_socketio" {
+  direction         = "ingress"
+  ethertype         = "IPv4"
+  protocol          = "tcp"
+  port_range_min    = 81
+  port_range_max    = 81
+  remote_ip_prefix  = "0.0.0.0/0"
+  security_group_id = openstack_networking_secgroup_v2.basic.id
+}
+
+
 resource "openstack_networking_secgroup_rule_v2" "basic_http" {
     direction = "ingress"
     ethertype = "IPv4"
