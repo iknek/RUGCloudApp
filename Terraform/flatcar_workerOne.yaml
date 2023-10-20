@@ -20,10 +20,10 @@ systemd:
         After=network.target
 
         [Service]
-        Environment="K3S_TOKEN=K10ef4a2fde9feb66dba917fb605e620d8ad6cf1d29f7a6d3c8be311e344ce16cce::server:93a13f6c263675c087dbb756d14b41a7"
-        Environment="K3S_URL=https://10.10.3.41:6443"
+        Environment="K3S_TOKEN=${k3s_token}"
+        Environment="K3S_URL=https://${float_ip}:6443"
         ExecStartPre=/usr/bin/bash -c "curl -sfL https://get.k3s.io | sh -"
-        ExecStart=/usr/local/bin/k3s agent
+        ExecStart=/usr/bin/k3s agent
         Type=notify
         Restart=always
         RestartSec=5

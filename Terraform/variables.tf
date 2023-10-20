@@ -51,7 +51,27 @@ variable "flavor_name" {
     description = "Flavor to use for the instance"
 }
 
+variable "k3s_token" {
+    type = string
+    description = "K3S String"
+}
+
 variable "public_network" {
     type = string
     description = "Name of the public network to connect to"
+}
+
+variable "mongopass" {
+    type = string
+    description = "MONGO_PASS"
+}
+
+variable "rabbituser" {
+    type = string
+    description = "RABBITMQ_DEFAULT_USER"
+}
+
+variable "rabbitpass" {
+    type = string
+    description = "RABBITMQ_DEFAULT_PASS"
 }

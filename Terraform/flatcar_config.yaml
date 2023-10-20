@@ -20,11 +20,9 @@ systemd:
         After=network.target
 
         [Service]
-        Environment="K3S_TOKEN=K10c45f0114812572fba0f917c68a963be4029aa0188fef3c1acaab35adc84da14a::server:93a13f6c263675c087dbb756d14b41a7"
-        ExecStartPre=/usr/bin/curl -sfL https://get.k3s.io -o /tmp/k3s-install.sh
-        ExecStartPre=/usr/bin/chmod +x /tmp/k3s-install.sh
-        ExecStartPre=/usr/bin/bash /tmp/k3s-install.sh
-        ExecStart=/usr/local/bin/k3s server
+        Environment="INSTALL_K3S_EXEC=--cluster-init"
+        Environment="K3S_TOKEN=${k3s_token}"
+        ExecStart=/usr/bin/bash -c "curl -sfL https://get.k3s.io | K3S_TOKEN=${k3s_token} sh -s server"
         Type=notify
         Restart=always
         RestartSec=5
@@ -55,7 +53,7 @@ systemd:
       contents: |
         [Unit]
         Description=Install Helm
-        After=k3s.service apply-cinder-storageclass.service
+        After=apply-cinder-storageclass.service
         [Service]
         Type=oneshot
         Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/bin"
@@ -65,4 +63,28 @@ systemd:
 
         [Install]
         WantedBy=multi-user.target
-          
+    - name: setup-helms.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Setup Helms
+        Requires=install-helm.service
+        After=install-helm.service network.target
+        [Service]
+        Type=oneshot
+        Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/bin"
+        ExecStartPre=/usr/bin/bash -c "git clone https://github.com/iknek/testVMRepo.git /home/core/test"
+        ExecStartPre=/usr/bin/bash -c "cd /home/core/test && sudo helm repo add bitnami https://charts.bitnami.com/bitnami --kubeconfig=/etc/rancher/k3s/k3s.yaml"
+        ExecStartPre=/usr/bin/bash -c "cd /home/core/test && sudo helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx --kubeconfig=/etc/rancher/k3s/k3s.yaml"
+        ExecStartPre=/usr/bin/bash -c "cd /home/core/test && sudo helm repo update"
+        ExecStartPre=/usr/bin/bash -c "cd /home/core/test && sudo helm install my-mongodb bitnami/mongodb --set auth.rootPassword=${mongopass} --kubeconfig=/etc/rancher/k3s/k3s.yaml"
+        ExecStartPre=/usr/bin/bash -c "cd /home/core/test && sudo helm install rabbit --set auth.username=${rabbituser},auth.password=${rabbitpass},auth.erlangCookie=secretcookie bitnami/rabbitmq --kubeconfig=/etc/rancher/k3s/k3s.yaml"
+        ExecStartPre=/usr/bin/bash -c "cd /home/core/test && sudo helm install ingress-nginx ingress-nginx/ingress-nginx --kubeconfig=/etc/rancher/k3s/k3s.yaml"
+        ExecStartPre=/usr/bin/bash -c "kubectl rollout status deployment/ingress-nginx-controller -n default"
+        ExecStartPre=/usr/bin/bash -c "cd /home/core/test && sudo kubectl apply -f secrets.yaml && sudo kubectl apply -f configmap.yaml"
+        ExecStartPre=/usr/bin/bash -c "cd /home/core/test && sudo helm install server server-0.1.0.tgz --kubeconfig=/etc/rancher/k3s/k3s.yaml"
+        ExecStartPre=/usr/bin/bash -c "cd /home/core/test && sudo helm install worker worker-0.1.0.tgz --kubeconfig=/etc/rancher/k3s/k3s.yaml"       
+        ExecStart=/usr/bin/bash -c "cd /home/core/test && sudo helm install client client-0.1.0.tgz --kubeconfig=/etc/rancher/k3s/k3s.yaml >> /var/log/helm_install.log 2>&1"
+
+        [Install]
+        WantedBy=multi-user.target

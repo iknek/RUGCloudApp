@@ -11,6 +11,10 @@ data "ct_config" "flatcar" {
         sshkey = file("${path.module}/id_rsa.pub")
         imagename = var.imagename
         ip = openstack_networking_floatingip_v2.float_ip.address
+        k3s_token = var.k3s_token
+        mongopass = var.mongopass
+        rabbituser = var.rabbituser
+        rabbitpass = var.rabbitpass
     })
 }
 
@@ -23,7 +27,8 @@ data "ct_config" "worker" {
         # Use these values to fill the template
         sshkey = file("${path.module}/id_rsa.pub")
         imagename = var.imagename
-        ip = openstack_networking_floatingip_v2.float_ip.address
+        float_ip = openstack_compute_instance_v2.flatcar.access_ip_v4
+        k3s_token = var.k3s_token
     })
 }
 
@@ -36,6 +41,7 @@ data "ct_config" "workerTwo" {
         # Use these values to fill the template
         sshkey = file("${path.module}/id_rsa.pub")
         imagename = var.imagename
-        ip = openstack_networking_floatingip_v2.float_ip.address
+        float_ip = openstack_compute_instance_v2.flatcar.access_ip_v4
+        k3s_token = var.k3s_token
     })
 }
