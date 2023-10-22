@@ -11,10 +11,6 @@ resource "openstack_images_image_v2" "flatcar" {
     image_source_url = "https://stable.release.flatcar-linux.net/amd64-usr/current/flatcar_production_openstack_image.img.bz2"
     decompress = true
 
-    lifecycle {
-      prevent_destroy = true
-    }
-
     timeouts {
       create = "2h"
     }
