@@ -34,10 +34,10 @@ const connectToRabbitMQ = async () => {
         channel = await connection.createChannel();
         await channel.assertQueue(TASK_QUEUE, { durable: false });
         await channel.assertQueue(RESPONSE_QUEUE, { durable: false });
-        console.log("37 in index");
+        console.log("37 in index. ayy");
         channel.consume(RESPONSE_QUEUE, (msg) => {
             const response = JSON.parse(msg.content.toString());
-            console.log("37 in index. consuming");
+            console.log("40 in index. consuming");
             switch(response.type) {
                 case 'GET_ALL_ITEMS':
                 io.emit('itemsFetched', response.data);
@@ -57,32 +57,33 @@ connectToRabbitMQ();
 
 io.on('connection', (socket) => {
   console.log('User connected');
-  console.log("37 in index");
+  console.log("60 in index");
   socket.on('requestItems', () => {
     const correlationId = generateUuid();
-    channel.sendToQueue(TASK_QUEUE, Buffer.from(JSON.stringify({
-      type: 'GET_ALL_ITEMS'
-    })), {
-      correlationId: correlationId,
-      replyTo: RESPONSE_QUEUE
-    });
+    sendToTaskQueue('GET_ALL_ITEMS', null, correlationId);
   });
-
+  
   socket.on('addItem', (newItemData) => {
     const correlationId = generateUuid();
-    channel.sendToQueue(TASK_QUEUE, Buffer.from(JSON.stringify({
-      type: 'CREATE_ITEM',
-      data: newItemData
-    })), {
-      correlationId: correlationId,
-      replyTo: RESPONSE_QUEUE
-    });
+    sendToTaskQueue('CREATE_ITEM', newItemData, correlationId);
   });
 
   socket.on('disconnect', () => {
       console.log('User disconnected');
   });
 });
+
+function sendToTaskQueue(type, data, correlationId) {
+  if (channel) {
+    channel.sendToQueue(TASK_QUEUE, Buffer.from(JSON.stringify({ type, data })), {
+      correlationId: correlationId,
+      replyTo: RESPONSE_QUEUE
+    });
+  } else {
+    console.log("Channel is not ready. Retrying in 5 seconds.");
+    setTimeout(() => sendToTaskQueue(type, data, correlationId), 5000);
+  }
+}
 
 server.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);

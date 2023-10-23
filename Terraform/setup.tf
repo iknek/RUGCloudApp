@@ -11,6 +11,8 @@ terraform {
             version = "0.12.0"
         }
     }
+    backend "http" { 
+    }
 }
 
 # Configuration for OpenStack provider
