@@ -9,3 +9,4 @@ parameters:
   availability: nova
 allowVolumeExpansion: true
 volumeBindingMode: Immediate
+reclaimPolicy: Retain

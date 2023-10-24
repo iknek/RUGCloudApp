@@ -24,40 +24,46 @@ const io = socketIo(server, {
     credentials: true
   }
 });
-console.log("27 in index");
+
 app.use(bodyParser.json());
 
 let channel;
+
 const connectToRabbitMQ = async () => {
-    try {
-        const connection = await amqp.connect(RABBITMQ_URL);
-        channel = await connection.createChannel();
-        await channel.assertQueue(TASK_QUEUE, { durable: false });
-        await channel.assertQueue(RESPONSE_QUEUE, { durable: false });
-        console.log("37 in index. ayy");
-        channel.consume(RESPONSE_QUEUE, (msg) => {
-            const response = JSON.parse(msg.content.toString());
-            console.log("40 in index. consuming");
-            switch(response.type) {
-                case 'GET_ALL_ITEMS':
-                io.emit('itemsFetched', response.data);
-                break;
-                case 'CREATE_ITEM':
-                io.emit('itemAdded', response.data);
-                break;
-            }
-        }, { noAck: true });
-    } catch (error) {
-      console.log('Connection or Channel Error:', error);
-      setTimeout(connectToRabbitMQ, 5000);
-    }
-  };
-  
+  try {
+    const connection = await amqp.connect(RABBITMQ_URL);
+    connection.on("error", (err) => {
+      console.log("Connection Error:", err);
+    });
+
+    channel = await connection.createChannel();
+    channel.on("error", (err) => {
+      console.log("Channel Error:", err);
+    });
+
+    await channel.assertQueue(TASK_QUEUE, { durable: false });
+    await channel.assertQueue(RESPONSE_QUEUE, { durable: false });
+
+    channel.consume(RESPONSE_QUEUE, (msg) => {
+        const response = JSON.parse(msg.content.toString());
+        switch(response.type) {
+            case 'GET_ALL_ITEMS':
+              io.emit('itemsFetched', response.data);
+              break;
+            case 'CREATE_ITEM':
+              io.emit('itemAdded', response.data);
+              break;
+        }
+    }, { noAck: true });
+  } catch (error) {
+    console.log('Connection or Channel Error:', error);
+    setTimeout(connectToRabbitMQ, 5000);
+  }
+};
+
 connectToRabbitMQ();
 
 io.on('connection', (socket) => {
-  console.log('User connected');
-  console.log("60 in index");
   socket.on('requestItems', () => {
     const correlationId = generateUuid();
     sendToTaskQueue('GET_ALL_ITEMS', null, correlationId);

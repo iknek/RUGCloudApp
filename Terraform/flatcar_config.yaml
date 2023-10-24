@@ -40,13 +40,31 @@ systemd:
       contents: |
         [Unit]
         Description=Install Helm
-        After=k3s.service
+        After= k3s.service
         [Service]
         Type=oneshot
         Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/bin"
         ExecStartPre=/usr/bin/bash -c "curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3"
         ExecStartPre=/usr/bin/bash -c "chmod 700 get_helm.sh"
         ExecStart=/usr/bin/bash -c "HELM_INSTALL_DIR=/opt/bin ./get_helm.sh"        
+
+        [Install]
+        WantedBy=multi-user.target
+    - name: storage-stuff.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description= Storage stuff Service
+        After= install-helm.service
+        Requires=k3s.service network.target 
+        [Service]
+        Type=oneshot
+        ExecStartPre=/usr/bin/bash -c "git clone https://github.com/kubernetes/cloud-provider-openstack /home/core/cloud"
+        ExecStartPre=/usr/bin/bash -c "cd /home/core/cloud && sudo git checkout tags/v1.27.3"
+        ExecStartPre=/usr/bin/bash -c "cd /home/core/ && sudo kubectl create secret -n kube-system generic cloud-config --from-file=cloud.conf"
+        ExecStartPre=/usr/bin/bash -c "cd /home/core/cloud && rm manifests/cinder-csi-plugin/csi-secret-cinderplugin.yaml"
+        ExecStartPre=/usr/bin/bash -c "cd /home/core/cloud && sudo kubectl -f manifests/cinder-csi-plugin/ apply"
+        ExecStart=/usr/bin/bash -c "cd /home/core/ && sudo kubectl apply -f cinder-pv.yaml && sudo kubectl apply -f cinder-pvc.yaml"
 
         [Install]
         WantedBy=multi-user.target
@@ -65,7 +83,7 @@ systemd:
         ExecStartPre=/usr/bin/bash -c "cd /home/core/test && sudo helm repo add bitnami https://charts.bitnami.com/bitnami --kubeconfig=/etc/rancher/k3s/k3s.yaml"
         ExecStartPre=/usr/bin/bash -c "cd /home/core/test && sudo helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx --kubeconfig=/etc/rancher/k3s/k3s.yaml"
         ExecStartPre=/usr/bin/bash -c "cd /home/core/test && sudo helm repo update"
-        ExecStartPre=/usr/bin/bash -c "for i in {1..5}; do sudo kubectl cluster-info && sudo helm install my-mongodb bitnami/mongodb --set auth.rootPassword=${mongopass} --kubeconfig=/etc/rancher/k3s/k3s.yaml && break || sleep 15; done"
+        ExecStartPre=/usr/bin/bash -c "for i in {1..5}; do sudo kubectl cluster-info && sudo helm install my-mongodb bitnami/mongodb --set auth.rootPassword=${mongopass},persistence.existingClaim=pvc-a3f5ae58-6630-4aa7-8370-ebfaf1401038 --kubeconfig=/etc/rancher/k3s/k3s.yaml && break || sleep 15; done"
         ExecStartPre=/usr/bin/bash -c "cd /home/core/test && sudo helm install rabbit --set auth.username=${rabbituser},auth.password=${rabbitpass},auth.erlangCookie=secretcookie bitnami/rabbitmq --kubeconfig=/etc/rancher/k3s/k3s.yaml"
         ExecStartPre=/usr/bin/bash -c "cd /home/core/test && sudo helm install ingress-nginx ingress-nginx/ingress-nginx --kubeconfig=/etc/rancher/k3s/k3s.yaml"
         ExecStartPre=/usr/bin/bash -c "cd /home/core/test && sudo kubectl rollout status deployment/ingress-nginx-controller -n default"
@@ -76,22 +94,4 @@ systemd:
 
         [Install]
         WantedBy=multi-user.target
-    - name: storage-stuff.service
-      enabled: true
-      contents: |
-        [Unit]
-        Description= Storage stuff Service
-        After= setup-helms.service
-        Requires=k3s.service
 
-        [Service]
-        Type=oneshot
-        ExecStartPre=/usr/bin/bash -c "git clone https://github.com/kubernetes/cloud-provider-openstack /home/core/cloud"
-        ExecStartPre=/usr/bin/bash -c "cd /home/core/cloud && git checkout tags/v1.27.3"
-        ExecStartPre=/usr/bin/bash -c "cd /home/core/ && sudo kubectl create secret -n kube-system generic cloud-config --from-file=cloud.conf"
-        ExecStartPre=/usr/bin/bash -c "cd /home/core/cloud && rm manifests/cinder-csi-plugin/csi-secret-cinderplugin.yaml"
-        ExecStartPre=/usr/bin/bash -c "cd /home/core/cloud && sudo kubectl -f manifests/cinder-csi-plugin/ apply"
-        ExecStart=/usr/bin/bash -c "cd /home/core/ && sudo kubectl apply -f cinder-pv.yaml && sudo kubectl apply -f cinder-pvc.yaml"
-
-        [Install]
-        WantedBy=multi-user.target

@@ -53,7 +53,7 @@ resource "null_resource" "provision_web" {
       user        = "core"
       agent       = "false"
       private_key = file("${path.module}/id_rsa")
-      host        = openstack_networking_floatingip_v2.float_ip.address
+      host        = "195.169.23.130"
     }
   }
 
@@ -65,7 +65,7 @@ resource "null_resource" "provision_web" {
       user        = "core"
       agent       = "false"
       private_key = file("${path.module}/id_rsa")
-      host        = openstack_networking_floatingip_v2.float_ip.address
+      host        = "195.169.23.130"
     }
   }
 
@@ -77,13 +77,14 @@ resource "null_resource" "provision_web" {
       user        = "core"
       agent       = "false"
       private_key = file("${path.module}/id_rsa")
-      host        = openstack_networking_floatingip_v2.float_ip.address
+      host        = "195.169.23.130"
     }
   }
 
   # Run the commands
   provisioner "remote-exec" {
     inline = [
+      "while [ ! -f /home/core/cloud.conf ]; do echo 'Waiting for cloud.conf'; sleep 5; done",
       "systemctl start storage-stuff.service"
     ]
     connection {
@@ -91,7 +92,7 @@ resource "null_resource" "provision_web" {
       user        = "core"
       agent       = "false"
       private_key = file("${path.module}/id_rsa")
-      host        = openstack_networking_floatingip_v2.float_ip.address
+      host        = "195.169.23.130"
     }
   }
 }
