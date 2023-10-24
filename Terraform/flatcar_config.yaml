@@ -83,7 +83,7 @@ systemd:
         ExecStartPre=/usr/bin/bash -c "cd /home/core/test && sudo helm repo add bitnami https://charts.bitnami.com/bitnami --kubeconfig=/etc/rancher/k3s/k3s.yaml"
         ExecStartPre=/usr/bin/bash -c "cd /home/core/test && sudo helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx --kubeconfig=/etc/rancher/k3s/k3s.yaml"
         ExecStartPre=/usr/bin/bash -c "cd /home/core/test && sudo helm repo update"
-        ExecStartPre=/usr/bin/bash -c "for i in {1..5}; do sudo kubectl cluster-info && sudo helm install my-mongodb bitnami/mongodb --set auth.rootPassword=${mongopass},persistence.existingClaim=pvc-a3f5ae58-6630-4aa7-8370-ebfaf1401038 --kubeconfig=/etc/rancher/k3s/k3s.yaml && break || sleep 15; done"
+        ExecStartPre=/usr/bin/bash -c "for i in {1..5}; do sudo kubectl cluster-info && sudo helm install my-mongodb bitnami/mongodb --set auth.rootPassword=${mongopass},persistence.existingClaim=test-volume --kubeconfig=/etc/rancher/k3s/k3s.yaml && break || sleep 15; done"
         ExecStartPre=/usr/bin/bash -c "cd /home/core/test && sudo helm install rabbit --set auth.username=${rabbituser},auth.password=${rabbitpass},auth.erlangCookie=secretcookie bitnami/rabbitmq --kubeconfig=/etc/rancher/k3s/k3s.yaml"
         ExecStartPre=/usr/bin/bash -c "cd /home/core/test && sudo helm install ingress-nginx ingress-nginx/ingress-nginx --kubeconfig=/etc/rancher/k3s/k3s.yaml"
         ExecStartPre=/usr/bin/bash -c "cd /home/core/test && sudo kubectl rollout status deployment/ingress-nginx-controller -n default"
