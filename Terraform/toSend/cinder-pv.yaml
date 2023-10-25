@@ -1,0 +1,12 @@
+apiVersion: "v1"
+kind: "PersistentVolume"
+metadata:
+  name: "csi-sc-cinder" 
+spec:
+  capacity:
+    storage: "10Gi" 
+  accessModes:
+    - "ReadWriteOnce"
+  cinder: 
+    volumeID: "4b72e136-4186-442e-9d51-27107c39dc3e" 
+  storageClassName: "local-path"

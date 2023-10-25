@@ -46,7 +46,7 @@ resource "null_resource" "provision_web" {
 
   # Send the cloud.conf file
   provisioner "file" {
-    source      = "cloud.conf"
+    source      = "toSend/cloud.conf"
     destination = "/home/core/cloud.conf"
     connection {
       type        = "ssh"
@@ -58,7 +58,19 @@ resource "null_resource" "provision_web" {
   }
 
   provisioner "file" {
-    source      = "cinder-pv.yaml"
+    source      = "toSend/values.yaml"
+    destination = "/home/core/values.yaml"
+    connection {
+      type        = "ssh"
+      user        = "core"
+      agent       = "false"
+      private_key = file("${path.module}/id_rsa")
+      host        = "195.169.23.130"
+    }
+  }
+
+  provisioner "file" {
+    source      = "toSend/cinder-pv.yaml"
     destination = "/home/core/cinder-pv.yaml"
     connection {
       type        = "ssh"
@@ -70,7 +82,7 @@ resource "null_resource" "provision_web" {
   }
 
   provisioner "file" {
-    source      = "cinder-pvc.yaml"
+    source      = "toSend/cinder-pvc.yaml"
     destination = "/home/core/cinder-pvc.yaml"
     connection {
       type        = "ssh"

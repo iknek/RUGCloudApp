@@ -7,3 +7,5 @@ id_rsa*
 secrets.yaml
 variables.tfvars
 cloud.conf
+values.yaml
+rab-val.yaml
