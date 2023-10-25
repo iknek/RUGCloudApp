@@ -1,0 +1,21 @@
+securityContext:
+  runAsUser: 1001
+  runAsGroup: 3000
+  fsGroup: 2000
+  fsGroupChangePolicy: "Always"
+
+persistence:
+  existingClaim: mongodb-pv-claim
+
+auth:
+  rootPassword: z2hQ4TBZmf
+
+volumeMounts:
+  - name: mongodb-data
+    mountPath: /data/db
+
+volumes:
+  - name: mongodb-data
+    persistentVolumeClaim:
+      claimName: test-volume
+      readOnly: false
