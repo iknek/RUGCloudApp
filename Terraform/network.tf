@@ -86,6 +86,17 @@
         security_group_id = openstack_networking_secgroup_v2.basic.id
     }
 
+    //For client svc nodeport
+    resource "openstack_networking_secgroup_rule_v2" "basic_six" {
+        direction = "ingress"
+        ethertype = "IPv4"
+        protocol = "tcp"
+        port_range_min = 6443
+        port_range_max = 6443
+        remote_ip_prefix = "0.0.0.0/0"
+        security_group_id = openstack_networking_secgroup_v2.basic.id
+    }
+
     //RabbitMQ
     resource "openstack_networking_secgroup_rule_v2" "basic_rabbitmq_15672" {
     direction         = "ingress"

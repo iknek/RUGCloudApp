@@ -1,13 +1,21 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: csi-sc-cinder
+    name: mongodb-pv
 spec:
   capacity:
-    storage: "10Gi" 
+    storage: 5Gi
+  volumeMode: Filesystem
   accessModes:
-    - "ReadWriteOnce"
-  cinder: 
-    volumeID: "4b72e136-4186-442e-9d51-27107c39dc3e" 
-  storageClassName: "local-path"
+    - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
+  local:
+    path: /mnt/data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: size
+          operator: In
+          values:
+            - medium
