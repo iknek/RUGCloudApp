@@ -72,7 +72,7 @@ systemd:
         ExecStartPre=/usr/bin/bash -c "cd /home/core/cloud && rm manifests/cinder-csi-plugin/csi-secret-cinderplugin.yaml"
         ExecStartPre=/usr/bin/bash -c "cd /home/core/cloud && sudo kubectl -f manifests/cinder-csi-plugin/ apply"
         ExecStartPre=/usr/bin/bash -c "git clone https://github.com/iknek/testVMRepo.git /home/core/test"
-        ExecStartPre=/usr/bin/bash -c "cd /home/core/test && sudo kubectl apply -f cinder-storageclass.yaml"
+        ExecStartPre=/usr/bin/bash -c "cd /home/core/test && sudo kubectl apply -f cinder-pv.yaml"
         ExecStart=/usr/bin/bash -c "cd /home/core/test && sudo kubectl apply -f cinder-pvc.yaml"
         
         [Install]
