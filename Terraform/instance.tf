@@ -46,7 +46,7 @@ resource "null_resource" "provision_web" {
 
   # Send the cloud.conf file
   provisioner "file" {
-    source      = "toSend/cloud.conf"
+    source      = "cloud.conf"
     destination = "/home/core/cloud.conf"
     connection {
       type        = "ssh"
@@ -58,8 +58,8 @@ resource "null_resource" "provision_web" {
   }
 
   provisioner "file" {
-    source      = "toSend/values.yaml"
-    destination = "/home/core/values.yaml"
+    source      = "secrets.yaml"
+    destination = "/home/core/secrets.yaml"
     connection {
       type        = "ssh"
       user        = "core"
@@ -72,7 +72,6 @@ resource "null_resource" "provision_web" {
   # Run the commands
   provisioner "remote-exec" {
     inline = [
-      "while [ ! -f /home/core/values.yaml ]; do echo 'Waiting for values.yaml'; sleep 5; done",
       "systemctl start storage-stuff.service"
     ]
     connection {
@@ -84,7 +83,6 @@ resource "null_resource" "provision_web" {
     }
   }
 }
-
 
 resource "openstack_blockstorage_volume_v3" "volume_1" {
   name = "volume_1"
